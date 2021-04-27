@@ -1,0 +1,512 @@
+---
+openapi: 3.0.0
+info:
+  title: Global Names Verifier API
+  description: "The gnames app verifies (reconciles and resolves) strings to known\nscientific names.\n\nMatching strings to known scientific names involves 2 stages. The first\nstage is reconciliation. Scientific names can be represented in many\ndifferent ways. Sometimes authors and years of name description are\npresent, somtimes not. Sometimes ranks and / or annotations are included,\nsometimes not.  On top of that there are many different ways to abbreviate\nauthors, add or remove commas etc. The reconciliation step simplifies names\nto their core components and then compares them.\n\nResolution is the second step in this verification process, where the\nprogram searches for the taxonomic meaning of a name. Resolution uses\ntaxonomy-aware data sources that make it possible to find a clade/s that\nuse/s the name (from the reconciliation step) as a synonym or a currently\naccepted name.\n\nName matching is a multi-stage process. First, names are matched as they\nare.  If that does not work, matching uses fuzzy algorithms. If there is\nstill no match, we start to remove middle or end of the names components\nand try to match what is left.\n\nGo to the Global Names (https://resolver.globalnames.org/data_sources) to\nsee where names come from in this resource.  Note that you can specify\nwhich of these resource/s you prefer to use for this verification process.\n\nIf you found a bug or want to request a feature for API, create an issue at\nhttps://github.com/gnames/gnames/issues\n\nIf you use a web-site at https://verifier.globalnames.org or command line\nclient from https://github.com/gnames/gnverifier and want to report a\nbug or request a feature, create an issue at \nhttps://github.com/gnames/gnverifier/issues\n"
+  contact:
+    name: Dmitry Mozzherin
+    url: https://github.com/dimus
+    email: dmozzherin@gmail.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 1.0.0
+servers:
+- url: https://verifier.globalnames.org/api/v1
+  description: Production gnames service
+- url: https://virtserver.swaggerhub.com/dimus/gnames/1.0.0
+  description: SwaggerHub API Auto Mocking
+paths:
+  /ping:
+    get:
+      responses:
+        "200":
+          description: Use this endpoint to see if service is running.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: pong
+  /version:
+    get:
+      responses:
+        "200":
+          description: The version of the gnames app.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Version'
+  /data_sources:
+    get:
+      responses:
+        "200":
+          description: An array with biodiversity data-aggregators metadata.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataSources'
+  /data_sources/{id}:
+    get:
+      description: Provides metadata about a specific data-source.
+      parameters:
+      - name: id
+        in: path
+        description: The identifier of a data-source.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+          example: 1
+      responses:
+        "200":
+          description: Metdata about requested data-source.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataSource'
+  /verifications:
+    post:
+      description: Verifies an array of strings against known scientific names.
+      requestBody:
+        description: |
+          - An array of strings to verify.
+          - An array of preferred data-sources to verify against.
+          - A flag to request vernacular names.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyParams'
+        required: true
+      responses:
+        "200":
+          description: An array of verification results.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Verifications'
+  /verifications/{names}:
+    get:
+      description: Verifies an array of strings separated by '|' character.
+      parameters:
+      - name: names
+        in: path
+        description: Strings to verify (separated by '|' character).
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: Pomatomus soltator|Bubo bubo
+      - name: pref_sources
+        in: query
+        description: Array of preferred data-sources IDs separated by '|'.
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 1|12
+      - name: capitalize
+        in: query
+        description: Capitalizes the first letter of a name-string.
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: boolean
+          example: false
+      responses:
+        "200":
+          description: An array of verification results.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Verifications'
+components:
+  schemas:
+    Version:
+      required:
+      - build
+      - version
+      type: object
+      properties:
+        version:
+          type: string
+          description: The version number.
+          example: v0.3.7
+        build:
+          type: string
+          description: The compilation timestamp.
+          example: 2020-11-26_17:39:49UTC
+      description: The version number and build time of the `gnames` app.
+    DataSources:
+      type: array
+      description: A list of biodiversity data-sources aggregated by `gnames`.
+      items:
+        $ref: '#/components/schemas/DataSource'
+    DataSource:
+      required:
+      - curation
+      - id
+      - recordCount
+      - title
+      - titleShort
+      - updatedAt
+      type: object
+      properties:
+        id:
+          type: integer
+          description: |
+            An identifier associated with the data-source
+            in gnames database. This ID is intended
+            to be stable through the lifespan of
+            GlobalNames project.
+          example: 1
+        uuid:
+          type: string
+          description: |
+            UUID v4 that is associated with the data-source.
+            This UUID is a global identifier of the
+            data-source in the context of GlobalNames.
+          example: d4df2968-4257-4ad9-ab81-bedbbfb25e2a
+        title:
+          type: string
+          description: The name of the data-source.
+          example: The Catalogue of Life
+        titleShort:
+          type: string
+          description: |
+            A simplified/abbreviated name of the data-source. It can be
+            used in outputs without worrying about excessively long names
+            of data-sources.
+          example: Catalogue of Life
+        version:
+          type: string
+          description: The version of a data-source according to data-provider.
+          example: August 2020 Edition
+        revisionDate:
+          type: string
+          description: |
+            An information when the data-source was updated according
+            to the data-provider. The value would follow one of the following
+            formats
+            - year-month-day
+            - year-month
+            - year
+          example: 2020-08
+        doi:
+          type: string
+          description: Digital Object Identifier
+          example: 10.15468/rffz4x
+        citation:
+          type: string
+          description: A citation representing the data-source.
+          example: 'Species 2000 & ITIS Catalogue of Life: 2019, Catalogue of Life'
+        authors:
+          type: string
+          description: Authors of the data-source.
+          example: F. Bisby et al
+        description:
+          type: string
+          description: A summary describing the resource.
+          example: This release of the Catalogue of Life contains contributions from 172 databases with information on 1,867,817 species
+        homeURL:
+          type: string
+          description: A website of the data-source.
+          example: http://www.catalogueoflife.org/
+        isOutlinkReady:
+          type: boolean
+          description: |
+            The flag is true if the data-source has enough data and metadata
+            to be recommended for outlinking. If the flag is false, it does
+            not mean that the original data-source is not good, it means
+            that its representation at gnames is not complete/recent enough.
+          example: true
+        curation:
+          type: string
+          description: |
+            This field indicates an approximate amount of effort
+            spent on verification of the data aggregated
+            in the data-source. There are 3 levels
+            - `NotCurated`
+            - `AutoCurated`
+            - `Curated`
+
+            If this flag has a `NotCurated` value, it does not mean that
+            original data-source is not curated, rather it means the curation
+            level is not known to `gnames`.
+          example: Curated
+        recordCount:
+          type: integer
+          description: The number of records harvested from the data-source.
+          example: 3927925
+        updatedAt:
+          type: string
+          description: A timestamp of the last data-source harvest by gnames.
+          example: 2020-06-15T00:58:02.000+0000
+      description: Metadata about a biodiversity data-aggregator.
+    VerifyParams:
+      required:
+      - nameStrings
+      type: object
+      properties:
+        nameStrings:
+          type: array
+          example:
+          - Pomatomus soltator
+          - Bubo bubo (Linnaeus, 1758)
+          items:
+            type: string
+            description: A name-string to be verified.
+        preferredSources:
+          type: array
+          example:
+          - 1
+          - 12
+          - 169
+          items:
+            type: integer
+            description: |
+              The identifiers of the data-sources that are important for the
+              user. Normally, only the "best result" is returned. If there are
+              preferred data-sources, their results will be always returned
+              as well (if there is a match).
+            example: 1
+        withVernaculars:
+          type: boolean
+          description: |
+            If this flag is "true", return vernacular names as well.
+            (a placeholder, not implemented yet)
+          example: false
+        withCapitalization:
+          type: boolean
+          description: |
+            If this flag is "true", name-strings that start with low-case
+            letter will be capitalized.
+          example: false
+      description: Parameters for verification of name-strings.
+    Verifications:
+      type: array
+      description: An array of verification results.
+      items:
+        $ref: '#/components/schemas/Verification'
+    Verification:
+      required:
+      - curation
+      - dataSourcesNum
+      - input
+      - inputId
+      - matchType
+      type: object
+      properties:
+        inputId:
+          type: string
+          description: |
+            An UUID v5 generated from the input string using "globalnames.org"
+            DNS domain name as a seed. This UUID can be used as
+            a distributed global unique identifier of the string and
+            can be created independently in any popular programming language.
+          format: uuid
+          example: 2284b0d6-d965-5c39-ace5-3ef673da6691
+        input:
+          type: string
+          description: An input name-string entered for the verification.
+          example: Pomatomus soltator
+        matchType:
+          type: string
+          description: |
+            Indicates the quality of verification.
+            - `NoMatch` (no matched name found)
+            - `Exact` (exact match to a canonical form or a verbatim string)
+            - `Fuzzy` (fuzzy match to a canonical form)
+            - `PartialExact` (match after removing last or middle epithets)
+            - `PartialFuzzy` (fuzzy partial match after removing some parts)
+          example: Fuzzy
+        bestResult:
+          $ref: '#/components/schemas/ResultData'
+        preferredResults:
+          type: array
+          description: Matched records found in preferred data-sources.
+          items:
+            $ref: '#/components/schemas/ResultData'
+        dataSourcesNum:
+          type: integer
+          description: |
+            The number of data-sources where the string had a
+            match to a scientific name.
+          example: 12
+        curation:
+          type: string
+          description: |
+            The best curation level from matched
+            data-sources. Possible values are
+            - `NotCurated`
+            - `AutoCurated`
+            - `Curated`
+
+            If this flag has a `NotCurated` value, it does not mean that
+            original data-source is not curated, rather it means the curation
+            level is not known to `gnames`.
+          example: Curated
+        error:
+          type: string
+          description: "Normally an empty string. In case of an unexpected error, \nit will be shown here. If error is not empty, it means\nthat matching failed because of a bug in the system.\n"
+      description: Verification result for a particular input name-string.
+    ResultData:
+      type: object
+      properties:
+        dataSourceId:
+          type: integer
+          description: |
+            An ID of the data-source where the match was found. This is a
+            local ID at GlobalNames and it has been stable for more than
+            10 years.
+          example: 1
+        dataSourceTitleShort:
+          type: string
+          description: A simplified/abbreviated title of the data-source.
+          example: Catalogue of Life
+        curation:
+          type: string
+          description: |
+            A curation level for the record's data-source. If data-source
+            is known to be curated, there is less risk of misspelling of the
+            matched name.
+          example: Curated
+        recordId:
+          type: string
+          description: |
+            The record ID of the `matchedName` from the data-source.
+            If the data-source does not provide record ID, the ID is
+            generated by `gnames` and is prepended with a 'gn_' prefix.
+          example: TX123
+        globalId:
+          type: string
+          description: A globally unique record ID (UUID, LSID, DOI etc).
+          example: 2284b0d6-d965-5c39-ace5-3ef673da6691
+        localId:
+          type: string
+          description: |
+            An additional ID that is used internally by the data-source.
+            Quite often such IDs are used by data-sources to generate URLs to
+            their records.
+          example: "33"
+        outlink:
+          type: string
+          description: |
+            An external URL provided by the data-source for the record.
+          example: http://www.catalogueoflife.org/annual-checklist/2019/details/species/id/d9ac988f149a3d2822d71c673be09317
+        entryDate:
+          type: string
+          description: |
+            A date when a record was harvested to gnames. It follows a
+            pattern 'YYYY-MM-DD'.
+          example: 2020-06-30
+        matchedName:
+          type: string
+          description: A verbatim scientfic name matched to the input.
+          example: Pomatomus saltator (Linnaeus, 1766)
+        matchedCardinality:
+          type: integer
+          description: |
+            A cardinality value of the matched name. Binomial names
+            have cardinality 2, uninomials have cardinalty 1 etc.
+            Cardinality 0 means we cannot determine cardinality of a string.
+          example: 2
+        matchedCanonicalSimple:
+          type: string
+          description: |
+            The most normalized canonical form of a scientific name. It
+            does not contain infraspecific ranks, hybrid signs for named
+            hybrids, authors or years. This canonical form is the best for
+            matching names.
+          example: Pomatomus saltator
+        matchedCanonicalFull:
+          type: string
+          description: "A less normalized canonical form of the matched name \nwith more details. This canonical form is better for\npresentation and creating matching scores.\n"
+          example: Pomatomus saltator
+        currentRecordId:
+          type: string
+          description: "If the data-source allows taxonomic resolution of a name,\n`currentRecordId` will contain the data-source record ID of\nthe currently accepted name for the matched taxon. \n"
+          example: TX543
+        currentName:
+          type: string
+          description: |
+            The currently accepted name for the taxon according to the
+            data-source.
+          example: Pomatomus saltatrix (Linnaeus, 1766)
+        currentCardinality:
+          type: integer
+          description: |
+            Cardinality of the currently accepted name.
+          example: 2
+        currentCanonicalSimple:
+          type: string
+          description: |
+            The most normalized canonical form of the currently
+            accepted scientific name.
+          example: Pomatomus saltatrix
+        currentCanonicalFull:
+          type: string
+          description: |
+            A less normalized canonical form of the currently accepted
+            scientific name.
+          example: Pomatomus saltatrix
+        isSynonym:
+          type: boolean
+          description: |
+            A flag, that is true if the data-source regards matched name as
+            an any kind of synonym to the currently accepted name.
+          example: true
+        classificationPath:
+          type: string
+          description: "A classification path for the matched taxon provided by \nthe data-source.\n"
+          example: Animalia|Chordata|Actinopterygii|Perciformes|Pomatomidae|Pomatomus|Pomatomus saltatrix
+        classificationRanks:
+          type: string
+          description: The ranks of the `classificationPath` entries.
+          example: kingdom|phylum|class|order|family|genus|species
+        editDistance:
+          type: integer
+          description: |
+            Edit distance according to Levenshtein algorithm
+            in case of fuzzy matching. Exact matches would have `editDistance`
+            at 0.
+          example: 1
+        editDistanceStem:
+          type: integer
+          description: |
+            Edit distance according to Levenshtein algorithm between
+            stemmed versions of canonical forms of input name and matched
+            name.
+
+            Stemmed versions are the most normalized forms of
+            scientific names with stripped suffixes and transformation of
+            some characters (v->u, j->i). They are not provided by the API,
+            but can be obtained with `gnparser` app.
+          example: 1
+        matchType:
+          type: string
+          description: |
+            A category that describes the matching type between the input
+            name-string and the matched name from the data-source. The
+            categories are
+            - `NoMatch`
+            - `Exact`
+            - `Fuzzy`
+            - `PartialExact`
+            - `PartialFuzzy`
+          example: Fuzzy
+      description: |
+        A successsful match of input name-string to a record in a data-source.
+        ResultData with the highest score appears as a best match.
+        ResultData from a preferred data-sources are aggregated into
+        preferredResults array.
+
+        Scoring takes the following into account (sorted from the highest
+        impact to the least)
+        - infraspecific rank (`Aus bus var. cus` vs `Aus bus f. cus`)
+        - fuzzy matching edit distance (less is better)
+        - authorship matching
+        - accepted name vs synonyms (accepted name wins)

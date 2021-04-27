@@ -1,0 +1,203 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Global Names Matcher API",
+    "description": "API for matching strings to scientific names. Provided a list of name\nstrings (with or without the authority and year), this API searches\nmillions of names in the Global Names resource [see data\nsources](https://index.globalnames.org/datasource) to see if a match can be\nfound.  The service returns if a match was found to any known scientific\nnames and what kinds of matches were found (e.g. Exact, Fuzzy, Partial\netc).\n\nThe API does not provide any information about where matched names can be\nfound in [various biodiversity\ndatabases](https://resolver.globalnames.org/data_sources) searched by\ngnames. If you need this information use\nhttps://app.swaggerhub.com/apis-docs/dimus/gnames instead.\n\nThe source code is located at https://github.com/gnames/gnmatcher.\n",
+    "contact": {
+      "name": "Dmitry Mozzherin",
+      "url": "https://github.com/dimus",
+      "email": "dmozzherin@gmail.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://matcher.globalnames.org/api/v1",
+      "description": "Production server at globalnames.org"
+    },
+    {
+      "url": "https://virtserver.swaggerhub.com/dimus/gnmatcher/1.0.0",
+      "description": "SwaggerHub API Auto Mocking"
+    }
+  ],
+  "paths": {
+    "/ping": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "A liveliness probe.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "pong"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/version": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Provides the `gnmatcher` version.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Version"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/matches": {
+      "post": {
+        "description": "Match strings against known scientific names.",
+        "requestBody": {
+          "description": "An array of strings to match.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Names"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Input strings and their matches to scientific names.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Matches"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Version": {
+        "required": [
+          "build",
+          "version"
+        ],
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string",
+            "description": "The version number of `gnmatcher`.",
+            "example": "v0.3.7"
+          },
+          "build": {
+            "type": "string",
+            "description": "The compilation timestamp.",
+            "example": "2020-11-26_17:39:49UTC"
+          }
+        },
+        "description": "Version number and build time for `gnmatcher` app."
+      },
+      "Names": {
+        "type": "array",
+        "description": "Strings for verification.",
+        "example": [
+          "Pomatomus soltator",
+          "Bubo bubo (Linnaeus, 1758)"
+        ],
+        "items": {
+          "type": "string",
+          "description": "A string to match with known scientific names."
+        }
+      },
+      "Matches": {
+        "type": "array",
+        "description": "The found matches to name-strings.",
+        "items": {
+          "$ref": "#/components/schemas/Match"
+        }
+      },
+      "Match": {
+        "required": [
+          "id",
+          "input",
+          "matchType"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "UUID v5 generated from input string.",
+            "example": "2284b0d6-d965-5c39-ace5-3ef673da6691"
+          },
+          "input": {
+            "type": "string",
+            "description": "The input name-string.",
+            "example": "Pomatomus soltator"
+          },
+          "isVirus": {
+            "type": "boolean",
+            "description": "This flag indicates if found match is a name of a virus.\n",
+            "example": false
+          },
+          "matchType": {
+            "type": "string",
+            "description": "A type of the match. Can be one of\n- `NoMatch`\n- `Exact`\n- `Fuzzy`\n- `PartialExact`\n- `PartialFuzzy`\n",
+            "example": "Fuzzy"
+          },
+          "matchItems": {
+            "type": "array",
+            "description": "Matched canonical forms, virus names.",
+            "items": {
+              "$ref": "#/components/schemas/MatchItem"
+            }
+          }
+        },
+        "description": "Match result for one string."
+      },
+      "MatchItem": {
+        "required": [
+          "editDistance",
+          "editDistanceStem",
+          "id",
+          "matchedString"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "UUID v5 generated from the matched string.",
+            "example": "2cf19440-46c2-52c5-9fce-d66194286102"
+          },
+          "matchedString": {
+            "type": "string",
+            "description": "Matched canonical form of a scientific name or a virus name.\n",
+            "example": "Pomatomus saltator"
+          },
+          "editDistance": {
+            "type": "integer",
+            "description": "Edit distance between input string and\n`matchedString` according to Levenshtein\nalgorithm.\n",
+            "example": 1
+          },
+          "editDistanceStem": {
+            "type": "integer",
+            "description": "Edit distance between stemmed\ninput and stemmed `matchedString`\naccording to Levenshtein algorithm.\n",
+            "example": 1
+          }
+        },
+        "description": "One of the matched strings."
+      }
+    }
+  }
+}

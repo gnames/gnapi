@@ -33,6 +33,9 @@ func Run(port int) {
 	}
 
 	e.GET("/", home())
+	e.GET("/gnparser", gnparser())
+	e.GET("/gnames", gnames())
+	e.GET("/gnmatcher", gnmatcher())
 	e.GET("/gnfinder", gnfinder())
 
 	fs := http.FileServer(http.FS(static))
@@ -61,6 +64,27 @@ func home() func(echo.Context) error {
 func gnfinder() func(echo.Context) error {
 	return func(c echo.Context) error {
 		data := Data{DocJSON: "static/gnfinder/openapi.json"}
+		return c.Render(http.StatusOK, "api", data)
+	}
+}
+
+func gnparser() func(echo.Context) error {
+	return func(c echo.Context) error {
+		data := Data{DocJSON: "static/gnparser/openapi.json"}
+		return c.Render(http.StatusOK, "api", data)
+	}
+}
+
+func gnmatcher() func(echo.Context) error {
+	return func(c echo.Context) error {
+		data := Data{DocJSON: "static/gnmatcher/openapi.json"}
+		return c.Render(http.StatusOK, "api", data)
+	}
+}
+
+func gnames() func(echo.Context) error {
+	return func(c echo.Context) error {
+		data := Data{DocJSON: "static/gnames/openapi.json"}
 		return c.Render(http.StatusOK, "api", data)
 	}
 }
