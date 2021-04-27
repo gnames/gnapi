@@ -39,7 +39,8 @@ var rootCmd = &cobra.Command{
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
 		port := portFlag(cmd)
-		web.Run(port)
+		domain := domainFlag(cmd)
+		web.Run(domain, port)
 	},
 }
 
@@ -60,9 +61,15 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().IntP("port", "p", 8888, "port to serve web pages")
+	rootCmd.Flags().StringP("domain", "d", "https://apidoc.globalnames.org", "URL for API docs' domain")
 }
 
 func portFlag(cmd *cobra.Command) int {
 	port, _ := cmd.Flags().GetInt("port")
 	return port
+}
+
+func domainFlag(cmd *cobra.Command) string {
+	res, _ := cmd.Flags().GetString("domain")
+	return res
 }

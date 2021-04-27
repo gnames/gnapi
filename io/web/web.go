@@ -17,7 +17,7 @@ const withLogs = true
 var static embed.FS
 
 // Run starts HTTP/1 service for scientific names verification.
-func Run(port int) {
+func Run(domain string, port int) {
 	var err error
 	log.Printf("Starting the HTTP API server on port %d.", port)
 	e := echo.New()
@@ -32,11 +32,11 @@ func Run(port int) {
 		e.Logger.Fatal(err)
 	}
 
-	e.GET("/", home())
-	e.GET("/gnparser", gnparser())
-	e.GET("/gnames", gnames())
-	e.GET("/gnmatcher", gnmatcher())
-	e.GET("/gnfinder", gnfinder())
+	e.GET("/", home(domain))
+	e.GET("/gnparser", gnparser(domain))
+	e.GET("/gnames", gnames(domain))
+	e.GET("/gnmatcher", gnmatcher(domain))
+	e.GET("/gnfinder", gnfinder(domain))
 
 	fs := http.FileServer(http.FS(static))
 	e.GET("/static/*", echo.WrapHandler(fs))
@@ -51,40 +51,40 @@ func Run(port int) {
 }
 
 type Data struct {
-	DocJSON string
+	Domain, DocJSON string
 }
 
-func home() func(echo.Context) error {
+func home(domain string) func(echo.Context) error {
 	return func(c echo.Context) error {
-		data := Data{}
+		data := Data{Domain: domain}
 		return c.Render(http.StatusOK, "home", data)
 	}
 }
 
-func gnfinder() func(echo.Context) error {
+func gnfinder(domain string) func(echo.Context) error {
 	return func(c echo.Context) error {
-		data := Data{DocJSON: "static/gnfinder/openapi.json"}
+		data := Data{Domain: domain, DocJSON: "static/gnfinder/openapi.json"}
 		return c.Render(http.StatusOK, "api", data)
 	}
 }
 
-func gnparser() func(echo.Context) error {
+func gnparser(domain string) func(echo.Context) error {
 	return func(c echo.Context) error {
-		data := Data{DocJSON: "static/gnparser/openapi.json"}
+		data := Data{Domain: domain, DocJSON: "static/gnparser/openapi.json"}
 		return c.Render(http.StatusOK, "api", data)
 	}
 }
 
-func gnmatcher() func(echo.Context) error {
+func gnmatcher(domain string) func(echo.Context) error {
 	return func(c echo.Context) error {
-		data := Data{DocJSON: "static/gnmatcher/openapi.json"}
+		data := Data{Domain: domain, DocJSON: "static/gnmatcher/openapi.json"}
 		return c.Render(http.StatusOK, "api", data)
 	}
 }
 
-func gnames() func(echo.Context) error {
+func gnames(domain string) func(echo.Context) error {
 	return func(c echo.Context) error {
-		data := Data{DocJSON: "static/gnames/openapi.json"}
+		data := Data{Domain: domain, DocJSON: "static/gnames/openapi.json"}
 		return c.Render(http.StatusOK, "api", data)
 	}
 }
