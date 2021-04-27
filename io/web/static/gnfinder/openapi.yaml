@@ -4,7 +4,7 @@ info:
   description: |
     GNfinder takes a text in UTF-8 encoding, detects and verifies scientific
     names out of the text.
-    
+
     If you found a bug or want to request a feature for API, create an issue at
     https://github.com/gnames/gnfinder/issues
   contact:
@@ -38,7 +38,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Version'
-
   /find:
     post:
       description: Detects scientific names in supplied text.
@@ -83,7 +82,7 @@ components:
     FinderParams:
       required:
         - text
-      type: string
+      type: object
       properties:
         text:
           type: string
@@ -91,7 +90,7 @@ components:
             Thalictroides, 18s per doz.
             vitifoiia, Is. 6d. each
             Calopogon, or Cymbidium pul-
-            
+
             cheilum, 1 5s. per doz.
             Conostylis americana, 2i. 6d.
         noBayes:
@@ -116,7 +115,9 @@ components:
             of Bayesian odds. If this parameter is not given, english language
             is used by default. Currently only English and German languages
             are supported.
-          enum: ["eng", "deu"]
+          enum:
+            - eng
+            - deu
           example: eng
         detectLanguage:
           type: boolean
@@ -130,7 +131,13 @@ components:
             This parameter sets the number of words before and after
             detected name that will be returned back. Default is 0, maximum
             value is 5.
-          enum: [0,1,2,3,4,5]
+          enum:
+            - 0
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
           example: 0
         verification:
           type: boolean
@@ -160,9 +167,9 @@ components:
       type: object
       properties:
         metadata:
-          $ref: "#/components/schemas/Metadata"
+          $ref: '#/components/schemas/Metadata'
         names:
-          $ref: "#/components/schemas/Names"
+          $ref: '#/components/schemas/Names'
     Metadata:
       required:
         - date
@@ -180,7 +187,7 @@ components:
         date:
           type: string
           description: The date of running GNfinder query.
-          example: 2021-04-26T06:19:11.609407707-05:00
+          example: 2021-04-26T11:19:11.609Z
         gnfinderVersion:
           type: string
           description: The version of GNfinder.
@@ -272,7 +279,7 @@ components:
             Detected name, as it was found in text with new lines,
             punctuations etc. New lines for better readability are substituted
             with '␤' character.
-          example: Cymbidium pul-␤␤cheilum,
+          example: 'Cymbidium pul-␤␤cheilum,'
         name:
           type: string
           description: |
@@ -303,22 +310,22 @@ components:
                 the final odds value.
               additionalProperties: true
               example:
-                "spLen":
-                  "10": 13.127639159348814
-                "spEnd3":
-                  "lum": 157.67122667149846
-                "spDict":
-                  "notInDictionary": 0.04787142088130411
-                "priorOdds":
-                  "true": 0.1
-                "uniLen":
-                  "9": 2.171091427809083
-                "abbr":
-                  "false": 0.8679430877999654
-                "uniEnd3":
-                  "ium": 49.66932415292625
-                "uniDict":
-                  "whiteGenus": 20369.620855227393
+                spLen:
+                  '10': 13.127639159348814
+                spEnd3:
+                  lum: 157.67122667149846
+                spDict:
+                  notInDictionary: 0.04787142088130411
+                priorOdds:
+                  'true': 0.1
+                uniLen:
+                  '9': 2.171091427809083
+                abbr:
+                  'false': 0.8679430877999654
+                uniEnd3:
+                  ium: 49.66932415292625
+                uniDict:
+                  whiteGenus: 20369.620855227393
         offsetStart:
           type: integer
           description: |
@@ -344,7 +351,11 @@ components:
             Category of the nomenclatural annotation. The same annotation
             type might have significant variability in literature. This
             property provides a normalized value of an annotation.
-          enum: [NO_ANNOT,SP_NOV,SUBSP_NOV,COMB_NOV]
+          enum:
+            - NO_ANNOT
+            - SP_NOV
+            - SUBSP_NOV
+            - COMB_NOV
         wordsBefore:
           type: array
           description: |
@@ -366,7 +377,7 @@ components:
             - i
             - d
         verification:
-          $ref: "#/components/schemas/Verification"
+          $ref: '#/components/schemas/Verification'
     Verification:
       required:
         - curation
@@ -398,7 +409,12 @@ components:
             - `Fuzzy` (fuzzy match to a canonical form)
             - `PartialExact` (match after removing last or middle epithets)
             - `PartialFuzzy` (fuzzy partial match after removing some parts)
-          enum: [NoMatch,Exact,Fuzzy,PartialExact,PartialFuzzy]
+          enum:
+            - NoMatch
+            - Exact
+            - Fuzzy
+            - PartialExact
+            - PartialFuzzy
           example: Fuzzy
         bestResult:
           $ref: '#/components/schemas/ResultData'
@@ -422,7 +438,10 @@ components:
             If this flag has a `NotCurated` value, it does not mean that
             original data-source is not curated, rather it means the curation
             level is not known to `gnames`.
-          enum: [NotCurated,AutoCurated,Curated]
+          enum:
+            - NotCurated
+            - AutoCurated
+            - Curated
           example: Curated
         error:
           type: string
