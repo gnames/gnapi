@@ -1,0 +1,580 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Global Names Finder API",
+    "description": "GNfinder takes a text in UTF-8 encoding, detects and verifies scientific\nnames out of the text.\n\nIf you found a bug or want to request a feature for API, create an issue at\nhttps://github.com/gnames/gnfinder/issues\n",
+    "contact": {
+      "name": "Dmitry Mozzherin",
+      "url": "https://github.com/dimus",
+      "email": "dmozzherin@gmail.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://gnfinder.globalnames.org/api/v1",
+      "description": "Production GNfinder service"
+    }
+  ],
+  "paths": {
+    "/ping": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Use this endpoint to see if service is running.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "pong"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/version": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "The version of GNfinder.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Version"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/find": {
+      "post": {
+        "description": "Detects scientific names in supplied text.",
+        "requestBody": {
+          "description": "- A text in UTF-8 encoding.\n- A flag to disable Naive Bayes, detection.\n- An option to return back details how Bayes Odds are calculated.\n- A language used in the text.\n- An option to return certain number of words before and after a name.\n- An option to perform names verification.\n- An array of preferred data-sources to verify against.\n",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FinderParams"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "An array of verification results.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinderResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Version": {
+        "required": [
+          "build",
+          "version"
+        ],
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string",
+            "description": "The version number.",
+            "example": "v0.12.0"
+          },
+          "build": {
+            "type": "string",
+            "description": "The compilation timestamp.",
+            "example": "2020-11-26_17:39:49UTC"
+          }
+        },
+        "description": "The version number and build time of the `gnames` app."
+      },
+      "FinderParams": {
+        "required": [
+          "text"
+        ],
+        "type": "string",
+        "properties": {
+          "text": {
+            "type": "string",
+            "example": "Thalictroides, 18s per doz.\nvitifoiia, Is. 6d. each\nCalopogon, or Cymbidium pul-\n\ncheilum, 1 5s. per doz.\nConostylis americana, 2i. 6d.\n"
+          },
+          "noBayes": {
+            "type": "boolean",
+            "description": "If this flag is \"true\", only heuristic algorithms are used for\nname detection.\n",
+            "example": false
+          },
+          "oddsDetails": {
+            "type": "boolean",
+            "description": "If true, the resul will contain odds of all features used for\ncalculation of NaiveBayes odds. Odds describe probabiliby of a\nname to be 'real'. The higher the odds, the higher the probability\nthat a dectected name is not a falst positive. Odds are calculated\nby multiplication of the odds of separate features. Odds details\nexplain how the final odds value is calculated.\n"
+          },
+          "language": {
+            "type": "string",
+            "description": "The language of the text. Language value is used for calculation\nof Bayesian odds. If this parameter is not given, english language\nis used by default. Currently only English and German languages\nare supported.\n",
+            "enum": [
+              "eng",
+              "deu"
+            ],
+            "example": "eng"
+          },
+          "detectLanguage": {
+            "type": "boolean",
+            "description": "If this flag is true, the language used in the text will be\ndetermined programmatically.\n",
+            "example": false
+          },
+          "wordsAround": {
+            "type": "integer",
+            "description": "This parameter sets the number of words before and after\ndetected name that will be returned back. Default is 0, maximum\nvalue is 5.\n",
+            "enum": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "example": 0
+          },
+          "verification": {
+            "type": "boolean",
+            "description": "When this flag is true, there is an addional verification step for\ndetected names. This step requires internet connection and uses\nhttps://gnames.globalnames.org/api/v1 for verification queries.\n",
+            "example": false
+          },
+          "sources": {
+            "type": "array",
+            "example": [
+              1,
+              12,
+              169
+            ],
+            "items": {
+              "type": "integer",
+              "description": "The identifiers of the data-sources that are important for the\nuser. Normally, only the \"best result\" is returned. If there are\npreferred data-sources, their results will be always returned\nas well (if there is a match).\n",
+              "example": 1
+            }
+          }
+        }
+      },
+      "FinderResult": {
+        "required": [
+          "metadata",
+          "names"
+        ],
+        "type": "object",
+        "properties": {
+          "metadata": {
+            "$ref": "#/components/schemas/Metadata"
+          },
+          "names": {
+            "$ref": "#/components/schemas/Names"
+          }
+        }
+      },
+      "Metadata": {
+        "required": [
+          "date",
+          "gnfinderVersion",
+          "withBayes",
+          "withOddsAdjustment",
+          "tokensAround",
+          "language",
+          "detectLanguage",
+          "totalWords",
+          "totalCandidates",
+          "totalNames"
+        ],
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "description": "The date of running GNfinder query.",
+            "example": "2021-04-26T11:19:11.609Z"
+          },
+          "gnfinderVersion": {
+            "type": "string",
+            "description": "The version of GNfinder.",
+            "example": "v0.12.0"
+          },
+          "withBayes": {
+            "type": "boolean",
+            "description": "Indicates if Naive Bayes algorithms participated in the\nthe names detection. By default is would be true.\n",
+            "example": true
+          },
+          "withOddsAdjustment": {
+            "type": "boolean",
+            "description": "If true, GNfinder recalculates prior odds according to the number\nof names found in the text. If the text has less than 10\ncapitalized words, this setting is ignored. By default it would\nbe false.\n",
+            "example": false
+          },
+          "withVerification": {
+            "type": "boolean",
+            "description": "If true, there is an additional verification step that uses a\nremote https://gnames.globalnames.org/api/v1 service to check if\nfound names do exist in a variety of biodiversity databases. By\ndefault it would be false.\n",
+            "example": false
+          },
+          "wordsAround": {
+            "type": "integer",
+            "description": "Indicates the number of words before and after detected name that\nwill be returned in the results. By default it would be 0.\n",
+            "example": 0
+          },
+          "language": {
+            "type": "string",
+            "description": "Indicates the language that was used for calculation of Bayes odds.\n",
+            "example": "eng"
+          },
+          "detectLanguage": {
+            "type": "boolean",
+            "description": "If true, the language was detected automatically.\n"
+          },
+          "languageDetected": {
+            "type": "string",
+            "description": "Provides the value of automatically detected language.\n",
+            "example": "deu"
+          },
+          "totalTokens": {
+            "type": "integer",
+            "description": "Indicates the number of words in the document detected by a\na tokenizer function.\n",
+            "example": 20
+          },
+          "totalCandidates": {
+            "type": "integer",
+            "description": "Provides the number of capitalized words that could be the start\nof a scientific name.\n",
+            "example": 5
+          },
+          "totalNames": {
+            "type": "integer",
+            "description": "The number of detectd names in the text.\n"
+          }
+        }
+      },
+      "Names": {
+        "type": "array",
+        "description": "Provides information about names detected by GNfinder.\n",
+        "items": {
+          "$ref": "#/components/schemas/Name"
+        }
+      },
+      "Name": {
+        "required": [
+          "cardinality",
+          "verbatim",
+          "name",
+          "offsetStart",
+          "offsetEnd"
+        ],
+        "type": "object",
+        "description": "Describes data about a detected name.",
+        "properties": {
+          "cardinality": {
+            "type": "integer",
+            "description": "A cardinality value of the detected name. Binomial names\nhave cardinality 2, uninomials have cardinalty 1 etc.\nCardinality 0 means we cannot determine cardinality of a string.\n",
+            "example": 2
+          },
+          "verbatim": {
+            "type": "string",
+            "description": "Detected name, as it was found in text with new lines,\npunctuations etc. New lines for better readability are substituted\nwith '␤' character.\n",
+            "example": "Cymbidium pul-␤␤cheilum,"
+          },
+          "name": {
+            "type": "string",
+            "description": "String representation of a name after cleaning. If a name contains\nnon-standard characters introduced during optical character\nrecognition, they are substituted with '\ufffd' character.\n"
+          },
+          "oddsLog10": {
+            "type": "number",
+            "description": "Odds reflect a probability that some feature is true. In our case\nthe higher the odds, the higher is the probability that a\ndetected name is 'real'. Equal odds are a ration 1/1, meaning\nfor every 'true' event there is one 'false' event, the same can be\nexpressed as a probability 0.5. We provide a log base 10 of odds.\nThat means that log10 2 is the same as 100, log1 is the same as 10\nlog10 0 is the same as 1. If log is negative, it means Bayes\nalgorithm considers an event to be unlikely.\n",
+            "example": 7.276255952698947
+          },
+          "oddsDetails": {
+            "required": [
+              "name"
+            ],
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "object",
+                "description": "An associative array of Bayes features used for calculation of\nthe final odds value.\n",
+                "additionalProperties": true,
+                "example": {
+                  "spLen": {
+                    "10": 13.127639159348814
+                  },
+                  "spEnd3": {
+                    "lum": 157.67122667149846
+                  },
+                  "spDict": {
+                    "notInDictionary": 0.04787142088130411
+                  },
+                  "priorOdds": {
+                    "true": 0.1
+                  },
+                  "uniLen": {
+                    "9": 2.171091427809083
+                  },
+                  "abbr": {
+                    "false": 0.8679430877999654
+                  },
+                  "uniEnd3": {
+                    "ium": 49.66932415292625
+                  },
+                  "uniDict": {
+                    "whiteGenus": 20369.620855227393
+                  }
+                }
+              }
+            }
+          },
+          "offsetStart": {
+            "type": "integer",
+            "description": "The offset in UTF-8 characters from the beginning of the text\nto the start of a name.\n",
+            "example": 107
+          },
+          "offsetEnd": {
+            "type": "integer",
+            "description": "The offset in UTF-8 characters from the beginning of the text to\nthe end of a name.\n",
+            "example": 128
+          },
+          "annotNomen": {
+            "type": "string",
+            "description": "If a name has a nomenclatural annotation (for example\n\"Aus bus sp. nov\") this field will provide the verbatim\nform of the annotation.\n",
+            "example": "sp. nov."
+          },
+          "annotNomenType": {
+            "type": "string",
+            "description": "Category of the nomenclatural annotation. The same annotation\ntype might have significant variability in literature. This\nproperty provides a normalized value of an annotation.\n",
+            "enum": [
+              "NO_ANNOT",
+              "SP_NOV",
+              "SUBSP_NOV",
+              "COMB_NOV"
+            ]
+          },
+          "wordsBefore": {
+            "type": "array",
+            "description": "A list of words that preceed a name. The number of words is\ndetermined by WordsAround parameter.\n",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "per",
+              "dos"
+            ]
+          },
+          "wordsAfter": {
+            "type": "array",
+            "description": "A list of words that appear right after a name. The number of words\nis determined by WordsAround parameter.\n",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "i",
+              "d"
+            ]
+          },
+          "verification": {
+            "$ref": "#/components/schemas/Verification"
+          }
+        }
+      },
+      "Verification": {
+        "required": [
+          "curation",
+          "dataSourcesNum",
+          "input",
+          "inputId",
+          "matchType"
+        ],
+        "type": "object",
+        "properties": {
+          "inputId": {
+            "type": "string",
+            "description": "An UUID v5 generated from the input string using \"globalnames.org\"\nDNS domain name as a seed. This UUID can be used as\na distributed global unique identifier of the string and\ncan be created independently in any popular programming language.\n",
+            "format": "uuid",
+            "example": "2284b0d6-d965-5c39-ace5-3ef673da6691"
+          },
+          "input": {
+            "type": "string",
+            "description": "An input name-string entered for the verification.",
+            "example": "Pomatomus soltator"
+          },
+          "matchType": {
+            "type": "string",
+            "description": "Indicates the quality of verification.\n- `NoMatch` (no matched name found)\n- `Exact` (exact match to a canonical form or a verbatim string)\n- `Fuzzy` (fuzzy match to a canonical form)\n- `PartialExact` (match after removing last or middle epithets)\n- `PartialFuzzy` (fuzzy partial match after removing some parts)\n",
+            "enum": [
+              "NoMatch",
+              "Exact",
+              "Fuzzy",
+              "PartialExact",
+              "PartialFuzzy"
+            ],
+            "example": "Fuzzy"
+          },
+          "bestResult": {
+            "$ref": "#/components/schemas/ResultData"
+          },
+          "preferredResults": {
+            "type": "array",
+            "description": "Matched records found in preferred data-sources.",
+            "items": {
+              "$ref": "#/components/schemas/ResultData"
+            }
+          },
+          "dataSourcesNum": {
+            "type": "integer",
+            "description": "The number of data-sources where the string had a\nmatch to a scientific name.\n",
+            "example": 12
+          },
+          "curation": {
+            "type": "string",
+            "description": "The best curation level from matched\ndata-sources.\n\nIf this flag has a `NotCurated` value, it does not mean that\noriginal data-source is not curated, rather it means the curation\nlevel is not known to `gnames`.\n",
+            "enum": [
+              "NotCurated",
+              "AutoCurated",
+              "Curated"
+            ],
+            "example": "Curated"
+          },
+          "error": {
+            "type": "string",
+            "description": "Normally an empty string. In case of an unexpected error, \nit will be shown here. If error is not empty, it means\nthat matching failed because of a bug in the system.\n"
+          }
+        },
+        "description": "Verification data for a detected name."
+      },
+      "ResultData": {
+        "type": "object",
+        "properties": {
+          "dataSourceId": {
+            "type": "integer",
+            "description": "An ID of the data-source where the match was found. This is a\nlocal ID at GlobalNames and it has been stable for more than\n10 years.\n",
+            "example": 1
+          },
+          "dataSourceTitleShort": {
+            "type": "string",
+            "description": "A simplified/abbreviated title of the data-source.",
+            "example": "Catalogue of Life"
+          },
+          "curation": {
+            "type": "string",
+            "description": "A curation level for the record's data-source. If data-source\nis known to be curated, there is less risk of misspelling of the\nmatched name.\n",
+            "example": "Curated"
+          },
+          "recordId": {
+            "type": "string",
+            "description": "The record ID of the `matchedName` from the data-source.\nIf the data-source does not provide record ID, the ID is\ngenerated by `gnames` and is prepended with a 'gn_' prefix.\n",
+            "example": "TX123"
+          },
+          "globalId": {
+            "type": "string",
+            "description": "A globally unique record ID (UUID, LSID, DOI etc).",
+            "example": "2284b0d6-d965-5c39-ace5-3ef673da6691"
+          },
+          "localId": {
+            "type": "string",
+            "description": "An additional ID that is used internally by the data-source.\nQuite often such IDs are used by data-sources to generate URLs to\ntheir records.\n",
+            "example": "33"
+          },
+          "outlink": {
+            "type": "string",
+            "description": "An external URL provided by the data-source for the record.\n",
+            "example": "http://www.catalogueoflife.org/annual-checklist/2019/details/species/id/d9ac988f149a3d2822d71c673be09317"
+          },
+          "entryDate": {
+            "type": "string",
+            "description": "A date when a record was harvested to gnames. It follows a\npattern 'YYYY-MM-DD'.\n",
+            "example": "2020-06-30"
+          },
+          "matchedName": {
+            "type": "string",
+            "description": "A verbatim scientfic name matched to the input.",
+            "example": "Pomatomus saltator (Linnaeus, 1766)"
+          },
+          "matchedCardinality": {
+            "type": "integer",
+            "description": "A cardinality value of the matched name. Binomial names\nhave cardinality 2, uninomials have cardinalty 1 etc.\nCardinality 0 means we cannot determine cardinality of a string.\n",
+            "example": 2
+          },
+          "matchedCanonicalSimple": {
+            "type": "string",
+            "description": "The most normalized canonical form of a scientific name. It\ndoes not contain infraspecific ranks, hybrid signs for named\nhybrids, authors or years. This canonical form is the best for\nmatching names.\n",
+            "example": "Pomatomus saltator"
+          },
+          "matchedCanonicalFull": {
+            "type": "string",
+            "description": "A less normalized canonical form of the matched name \nwith more details. This canonical form is better for\npresentation and creating matching scores.\n",
+            "example": "Pomatomus saltator"
+          },
+          "currentRecordId": {
+            "type": "string",
+            "description": "If the data-source allows taxonomic resolution of a name,\n`currentRecordId` will contain the data-source record ID of\nthe currently accepted name for the matched taxon. \n",
+            "example": "TX543"
+          },
+          "currentName": {
+            "type": "string",
+            "description": "The currently accepted name for the taxon according to the\ndata-source.\n",
+            "example": "Pomatomus saltatrix (Linnaeus, 1766)"
+          },
+          "currentCardinality": {
+            "type": "integer",
+            "description": "Cardinality of the currently accepted name.\n",
+            "example": 2
+          },
+          "currentCanonicalSimple": {
+            "type": "string",
+            "description": "The most normalized canonical form of the currently\naccepted scientific name.\n",
+            "example": "Pomatomus saltatrix"
+          },
+          "currentCanonicalFull": {
+            "type": "string",
+            "description": "A less normalized canonical form of the currently accepted\nscientific name.\n",
+            "example": "Pomatomus saltatrix"
+          },
+          "isSynonym": {
+            "type": "boolean",
+            "description": "A flag, that is true if the data-source regards matched name as\nan any kind of synonym to the currently accepted name.\n",
+            "example": true
+          },
+          "classificationPath": {
+            "type": "string",
+            "description": "A classification path for the matched taxon provided by \nthe data-source.\n",
+            "example": "Animalia|Chordata|Actinopterygii|Perciformes|Pomatomidae|Pomatomus|Pomatomus saltatrix"
+          },
+          "classificationRanks": {
+            "type": "string",
+            "description": "The ranks of the `classificationPath` entries.",
+            "example": "kingdom|phylum|class|order|family|genus|species"
+          },
+          "editDistance": {
+            "type": "integer",
+            "description": "Edit distance according to Levenshtein algorithm\nin case of fuzzy matching. Exact matches would have `editDistance`\nat 0.\n",
+            "example": 1
+          },
+          "editDistanceStem": {
+            "type": "integer",
+            "description": "Edit distance according to Levenshtein algorithm between\nstemmed versions of canonical forms of input name and matched\nname.\n\nStemmed versions are the most normalized forms of\nscientific names with stripped suffixes and transformation of\nsome characters (v->u, j->i). They are not provided by the API,\nbut can be obtained with `gnparser` app.\n",
+            "example": 1
+          },
+          "matchType": {
+            "type": "string",
+            "description": "A category that describes the matching type between the input\nname-string and the matched name from the data-source. The\ncategories are\n- `NoMatch`\n- `Exact`\n- `Fuzzy`\n- `PartialExact`\n- `PartialFuzzy`\n",
+            "example": "Fuzzy"
+          }
+        },
+        "description": "A successsful match of input name-string to a record in a data-source.\nResultData with the highest score appears as a best match.\nResultData from a preferred data-sources are aggregated into\npreferredResults array.\n\nScoring takes the following into account (sorted from the highest\nimpact to the least)\n- infraspecific rank (`Aus bus var. cus` vs `Aus bus f. cus`)\n- fuzzy matching edit distance (less is better)\n- authorship matching\n- accepted name vs synonyms (accepted name wins)\n"
+      }
+    }
+  }
+}
