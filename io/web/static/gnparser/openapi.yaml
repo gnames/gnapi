@@ -30,7 +30,7 @@ info:
     located at https://github.com/gnames/gnparser.
 
     For more examples see
-    [test_data.md](https://github.com/gnames/gnparser/blob/v1.0.0/testdata/test_data.md)
+    [test_data.md](https://github.com/gnames/gnparser/blob/master/testdata/test_data.md)
   contact:
     name: Dmitry Mozzherin
     url: https://github.com/dimus
@@ -38,12 +38,10 @@ info:
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
-  version: 1.0.0
+  version: 1.3.0
 servers:
 - url: https://parser.globalnames.org/api/v1
   description: GNparser production service
-- url: https://virtserver.swaggerhub.com/dimus/gnparser/1.0.0
-  description: SwaggerHub API Auto Mocking
 paths:
   /{names}:
     get:
@@ -68,6 +66,15 @@ paths:
         required: false
         style: form
         explode: true
+        schema:
+          type: boolean
+          example: false
+      - name: cultivars
+        in: query
+        description: |
+          Takes in account botanical cultivars for generating
+          canonical forms, normalized version and cardinality of
+          a name.
         schema:
           type: boolean
           example: false
@@ -109,7 +116,7 @@ paths:
                     authors:
                     - H. Peragallo
                   id: f6a5b47b-9917-5a48-b0ff-366bc036ae9c
-                  parserVersion: v1.0.0
+                  parserVersion: v1.3.0
                 - parsed: true
                   quality: 1
                   verbatim: Bubo bubo
@@ -120,7 +127,7 @@ paths:
                     full: Bubo bubo
                   cardinality: 2
                   id: 4431a0f3-e901-519a-886f-9b97e0c99d8e
-                  parserVersion: v1.0.0
+                  parserVersion: v1.3.0
                 items:
                   $ref: '#/components/schemas/Parsed'
             text/csv:
@@ -175,7 +182,7 @@ paths:
                     authors:
                     - H. Peragallo
                   id: f6a5b47b-9917-5a48-b0ff-366bc036ae9c
-                  parserVersion: v1.0.0
+                  parserVersion: v1.3.0
                 - parsed: true
                   quality: 1
                   verbatim: Bubo bubo
@@ -186,7 +193,7 @@ paths:
                     full: Bubo bubo
                   cardinality: 2
                   id: 4431a0f3-e901-519a-886f-9b97e0c99d8e
-                  parserVersion: v1.0.0
+                  parserVersion: v1.3.0
                 items:
                   $ref: '#/components/schemas/Parsed'
             text/csv:
@@ -213,11 +220,15 @@ components:
             type: string
         withDetails:
           type: boolean
-          description: When true, parsed responses contain more details
+          description: When true, parsed responses contain more details.
+          example: false
+        withCultivars:
+          type: boolean
+          description: When true, botanical cultivars are supported.
           example: false
         csv:
           type: boolean
-          description: When true returns CSV output, `withDetails` is ignored.
+          description: When true, the CSV output is used, `withDetails` is ignored.
           example: false
     Parsed:
       required:
@@ -277,7 +288,8 @@ components:
           type: integer
           description: |
             Allows to sort, partition names according to number of elements
-            in their canonical forms.
+            in their canonical forms. If botanical cultivars are allowed,
+            their cultivar epithets are taken into account.
 
             0 - cardinality cannot be calculated
             1 - uninomial
@@ -395,7 +407,7 @@ components:
         version:
           type: string
           description: version of GNparser
-          example: v1.0.0
+          example: v1.3.0
       example:
         parsed: true
         quality: 2
@@ -809,6 +821,7 @@ components:
           - AUTHOR_WORD
           - AUTHOR_WORD_FILIUS
           - COMPARISON_MARKER
+          - CULTIVAR
           - GENUS
           - HYBRID_CHAR
           - INFRASPECIES
@@ -842,8 +855,12 @@ components:
       properties:
         value:
           type: string
-          description: uninomial name
+          description: uninomial name.
           example: Tribuloideae
+        cultivar:
+          type: string
+          description: cultivar epithet for botanical cultivars.
+          example: ‘Ace of Spades’
         rank:
           type: string
           description: |
@@ -880,6 +897,10 @@ components:
           type: string
           description: specific epithet of a binomial name
           example: tarda
+        cultivar:
+          type: string
+          description: cultivar epithet of a botanical cultivar
+          example: ‘Ace of Spades’
         authorship:
           $ref: '#/components/schemas/Authorship'
     DetailsInfraspecies_infraspecies_infraspecies:
@@ -914,6 +935,9 @@ components:
           type: string
           description: Specific epithet of a binomial name
           example: vitrea
+        cultivar:
+          type: string
+          description: Cultivar epithet of a botanical cultivar
         authorship:
           $ref: '#/components/schemas/Authorship'
         infraspecies:

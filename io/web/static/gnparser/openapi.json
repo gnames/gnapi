@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Global Names Parser API",
-    "description": "GNparser takes a scientific name and splits it into\nstructural elements.\n\nScientific names can be represented in many different\nvariants. For example \"Homo sapiens\" exists as\n\n- Homo sapiens\n- Homo sapiens Linn.\n- Homo sapiens L. 1758\n- Homo sapiens Linnaeus, 1758\n\nAs a result comparing names from different\nsources is hard. Parsing allows to extract the most\nconservative element from all these cases - \"Homo sapiens\".\n\nMost common use-cases for scientific names parsing are\n\n- Getting the simplest possible canonical form.\n- Quickly sort names by their \"cardinality\" (uninomial, binomial etc.).\n- Normalize name-string to a \"standard\" form.\n- Check if names contain syntactic mistakes.\n- Find semantic meaning of every word in a name.\n\nThe GNparser code and documentation is\nlocated at https://github.com/gnames/gnparser.\n\nFor more examples see\n[test_data.md](https://github.com/gnames/gnparser/blob/v1.0.0/testdata/test_data.md)\n",
+    "description": "GNparser takes a scientific name and splits it into\nstructural elements.\n\nScientific names can be represented in many different\nvariants. For example \"Homo sapiens\" exists as\n\n- Homo sapiens\n- Homo sapiens Linn.\n- Homo sapiens L. 1758\n- Homo sapiens Linnaeus, 1758\n\nAs a result comparing names from different\nsources is hard. Parsing allows to extract the most\nconservative element from all these cases - \"Homo sapiens\".\n\nMost common use-cases for scientific names parsing are\n\n- Getting the simplest possible canonical form.\n- Quickly sort names by their \"cardinality\" (uninomial, binomial etc.).\n- Normalize name-string to a \"standard\" form.\n- Check if names contain syntactic mistakes.\n- Find semantic meaning of every word in a name.\n\nThe GNparser code and documentation is\nlocated at https://github.com/gnames/gnparser.\n\nFor more examples see\n[test_data.md](https://github.com/gnames/gnparser/blob/master/testdata/test_data.md)\n",
     "contact": {
       "name": "Dmitry Mozzherin",
       "url": "https://github.com/dimus",
@@ -12,16 +12,12 @@
       "name": "MIT",
       "url": "https://opensource.org/licenses/MIT"
     },
-    "version": "1.0.0"
+    "version": "1.3.0"
   },
   "servers": [
     {
       "url": "https://parser.globalnames.org/api/v1",
       "description": "GNparser production service"
-    },
-    {
-      "url": "https://virtserver.swaggerhub.com/dimus/gnparser/1.0.0",
-      "description": "SwaggerHub API Auto Mocking"
     }
   ],
   "paths": {
@@ -50,6 +46,15 @@
             "required": false,
             "style": "form",
             "explode": true,
+            "schema": {
+              "type": "boolean",
+              "example": false
+            }
+          },
+          {
+            "name": "cultivars",
+            "in": "query",
+            "description": "Takes in account botanical cultivars for generating\ncanonical forms, normalized version and cardinality of\na name.\n",
             "schema": {
               "type": "boolean",
               "example": false
@@ -102,7 +107,7 @@
                         ]
                       },
                       "id": "f6a5b47b-9917-5a48-b0ff-366bc036ae9c",
-                      "parserVersion": "v1.0.0"
+                      "parserVersion": "v1.3.0"
                     },
                     {
                       "parsed": true,
@@ -116,7 +121,7 @@
                       },
                       "cardinality": 2,
                       "id": "4431a0f3-e901-519a-886f-9b97e0c99d8e",
-                      "parserVersion": "v1.0.0"
+                      "parserVersion": "v1.3.0"
                     }
                   ],
                   "items": {
@@ -191,7 +196,7 @@
                         ]
                       },
                       "id": "f6a5b47b-9917-5a48-b0ff-366bc036ae9c",
-                      "parserVersion": "v1.0.0"
+                      "parserVersion": "v1.3.0"
                     },
                     {
                       "parsed": true,
@@ -205,7 +210,7 @@
                       },
                       "cardinality": 2,
                       "id": "4431a0f3-e901-519a-886f-9b97e0c99d8e",
-                      "parserVersion": "v1.0.0"
+                      "parserVersion": "v1.3.0"
                     }
                   ],
                   "items": {
@@ -246,12 +251,17 @@
           },
           "withDetails": {
             "type": "boolean",
-            "description": "When true, parsed responses contain more details",
+            "description": "When true, parsed responses contain more details.",
+            "example": false
+          },
+          "withCultivars": {
+            "type": "boolean",
+            "description": "When true, botanical cultivars are supported.",
             "example": false
           },
           "csv": {
             "type": "boolean",
-            "description": "When true returns CSV output, `withDetails` is ignored.",
+            "description": "When true, the CSV output is used, `withDetails` is ignored.",
             "example": false
           }
         }
@@ -312,7 +322,7 @@
           },
           "cardinality": {
             "type": "integer",
-            "description": "Allows to sort, partition names according to number of elements\nin their canonical forms.\n\n0 - cardinality cannot be calculated\n1 - uninomial\n2 - binomial\n3 - trinomial\n4 - quadrinomial\n",
+            "description": "Allows to sort, partition names according to number of elements\nin their canonical forms. If botanical cultivars are allowed,\ntheir cultivar epithets are taken into account.\n\n0 - cardinality cannot be calculated\n1 - uninomial\n2 - binomial\n3 - trinomial\n4 - quadrinomial\n",
             "example": 3,
             "enum": [
               0,
@@ -404,7 +414,7 @@
           "version": {
             "type": "string",
             "description": "version of GNparser",
-            "example": "v1.0.0"
+            "example": "v1.3.0"
           }
         },
         "example": {
@@ -806,6 +816,7 @@
               "AUTHOR_WORD",
               "AUTHOR_WORD_FILIUS",
               "COMPARISON_MARKER",
+              "CULTIVAR",
               "GENUS",
               "HYBRID_CHAR",
               "INFRASPECIES",
@@ -839,8 +850,13 @@
         "properties": {
           "value": {
             "type": "string",
-            "description": "uninomial name",
+            "description": "uninomial name.",
             "example": "Tribuloideae"
+          },
+          "cultivar": {
+            "type": "string",
+            "description": "cultivar epithet for botanical cultivars.",
+            "example": "‘Ace of Spades’"
           },
           "rank": {
             "type": "string",
@@ -878,6 +894,11 @@
             "type": "string",
             "description": "specific epithet of a binomial name",
             "example": "tarda"
+          },
+          "cultivar": {
+            "type": "string",
+            "description": "cultivar epithet of a botanical cultivar",
+            "example": "‘Ace of Spades’"
           },
           "authorship": {
             "$ref": "#/components/schemas/Authorship"
@@ -925,6 +946,10 @@
             "type": "string",
             "description": "Specific epithet of a binomial name",
             "example": "vitrea"
+          },
+          "cultivar": {
+            "type": "string",
+            "description": "Cultivar epithet of a botanical cultivar"
           },
           "authorship": {
             "$ref": "#/components/schemas/Authorship"
