@@ -43,13 +43,23 @@ paths:
       description: Detects scientific names in supplied text.
       requestBody:
         description: |
-          - A text in UTF-8 encoding.
-          - A flag to disable Naive Bayes, detection.
-          - An option to return back details how Bayes Odds are calculated.
-          - A language used in the text.
-          - An option to return certain number of words before and after a name.
-          - An option to perform names verification.
-          - An array of preferred data-sources to verify against.
+          - text: a text in UTF-8 encoding.
+          - noBayes: a flag to disable Naive Bayes, detection.
+          - oddDetails: an option to return back details how Bayes Odds are calculated.
+          - language: a language used of the text is used by Bayes algorithm. It can contain the following accepted values:
+          
+          
+                     -  "": empty strings, language set to default "eng" (English)
+                     - "eng": language set to "eng" (English)
+                     - "deu": language set to "deu" (German)
+                     - "detect": language is determined by algorithm
+                     - anything else defaults to "eng" (English)
+                     
+          - wordsAround: an option to return a certain number of words before and after a name.
+          - verifiction: an option to perform names verification.
+          - sources: an array of preferred data-sources to verify against the list of IDs can
+                     be found at https://verifier.globalnames.org/data_sources.
+          
         content:
           application/json:
             schema:
@@ -118,13 +128,8 @@ components:
           enum:
             - eng
             - deu
+            - detect
           example: eng
-        detectLanguage:
-          type: boolean
-          description: |
-            If this flag is true, the language used in the text will be
-            determined programmatically.
-          example: false
         wordsAround:
           type: integer
           description: |

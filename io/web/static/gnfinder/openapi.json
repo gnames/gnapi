@@ -58,7 +58,7 @@
       "post": {
         "description": "Detects scientific names in supplied text.",
         "requestBody": {
-          "description": "- A text in UTF-8 encoding.\n- A flag to disable Naive Bayes, detection.\n- An option to return back details how Bayes Odds are calculated.\n- A language used in the text.\n- An option to return certain number of words before and after a name.\n- An option to perform names verification.\n- An array of preferred data-sources to verify against.\n",
+          "description": "- text: a text in UTF-8 encoding.\n- noBayes: a flag to disable Naive Bayes, detection.\n- oddDetails: an option to return back details how Bayes Odds are calculated.\n- language: a language used of the text is used by Bayes algorithm. It can contain the following accepted values:\n\n\n           -  \"\": empty strings, language set to default \"eng\" (English)\n           - \"eng\": language set to \"eng\" (English)\n           - \"deu\": language set to \"deu\" (German)\n           - \"detect\": language is determined by algorithm\n           - anything else defaults to \"eng\" (English)\n           \n- wordsAround: an option to return a certain number of words before and after a name.\n- verifiction: an option to perform names verification.\n- sources: an array of preferred data-sources to verify against the list of IDs can\n           be found at https://verifier.globalnames.org/data_sources.\n",
           "content": {
             "application/json": {
               "schema": {
@@ -129,14 +129,10 @@
             "description": "The language of the text. Language value is used for calculation\nof Bayesian odds. If this parameter is not given, english language\nis used by default. Currently only English and German languages\nare supported.\n",
             "enum": [
               "eng",
-              "deu"
+              "deu",
+              "detect"
             ],
             "example": "eng"
-          },
-          "detectLanguage": {
-            "type": "boolean",
-            "description": "If this flag is true, the language used in the text will be\ndetermined programmatically.\n",
-            "example": false
           },
           "wordsAround": {
             "type": "integer",
