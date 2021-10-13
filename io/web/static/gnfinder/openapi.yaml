@@ -40,7 +40,7 @@ paths:
                 $ref: '#/components/schemas/Version'
   /find:
     post:
-      description: Detects scientific names in supplied text.
+      description: Detects scientific names in supplied text or URL.
       requestBody:
         description: |
           - text: a text in UTF-8 encoding to search for scientific names. If this parameter is
@@ -94,8 +94,6 @@ components:
           example: '2020-11-26_17:39:49UTC'
       description: The version number and build time of the `gnames` app.
     FinderParams:
-      required:
-        - text
       type: object
       properties:
         text:
@@ -107,6 +105,15 @@ components:
 
             cheilum, 1 5s. per doz.
             Conostylis americana, 2i. 6d.
+          description: |
+            Contains the text which will be checked for scientific names. If this parameter
+            is not empty, the `url` paramter is ignored.
+        url:
+          type: string
+          example: https://en.wikipedia.org/wiki/Monochamus_galloprovincialis
+          description: |
+            If `text` parameter is empty, and `url` is given, `GNfinder` will process
+            the URL and will find names in the content of its body.
         noBayes:
           type: boolean
           description: |

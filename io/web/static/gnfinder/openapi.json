@@ -56,7 +56,7 @@
     },
     "/find": {
       "post": {
-        "description": "Detects scientific names in supplied text.",
+        "description": "Detects scientific names in supplied text or URL.",
         "requestBody": {
           "description": "- text: a text in UTF-8 encoding to search for scientific names. If this parameter is\n        set, the `url` parameter is ignored.\n- url: a url to a web-page or a document on Internet to search for scientific names.\n       If both `text` and `url` parameters are given,\n       the `text` parameter has precedence.\n- noBayes: a flag to disable Naive Bayes, detection.\n- oddDetails: an option to return back details how Bayes Odds are calculated.\n- language: a language of a text used by Bayes algorithm. It can contain the following accepted values:\n\n\n           -  \"\": empty strings, language set to default \"eng\" (English)\n           - \"eng\": language set to \"eng\" (English)\n           - \"deu\": language set to \"deu\" (German)\n           - \"detect\": language is determined by algorithm\n           - anything else defaults to \"eng\" (English)\n           \n- wordsAround: an option to return a certain number of words before and after a name.\n- verifiction: an option to perform names verification.\n- sources: an array of preferred data-sources to verify against the list of IDs can\n           be found at https://verifier.globalnames.org/data_sources.\n",
           "content": {
@@ -106,14 +106,17 @@
         "description": "The version number and build time of the `gnames` app."
       },
       "FinderParams": {
-        "required": [
-          "text"
-        ],
         "type": "object",
         "properties": {
           "text": {
             "type": "string",
-            "example": "Thalictroides, 18s per doz.\nvitifoiia, Is. 6d. each\nCalopogon, or Cymbidium pul-\n\ncheilum, 1 5s. per doz.\nConostylis americana, 2i. 6d.\n"
+            "example": "Thalictroides, 18s per doz.\nvitifoiia, Is. 6d. each\nCalopogon, or Cymbidium pul-\n\ncheilum, 1 5s. per doz.\nConostylis americana, 2i. 6d.\n",
+            "description": "Contains the text which will be checked for scientific names. If this parameter\nis not empty, the `url` paramter is ignored.\n"
+          },
+          "url": {
+            "type": "string",
+            "example": "https://en.wikipedia.org/wiki/Monochamus_galloprovincialis",
+            "description": "If `text` parameter is empty, and `url` is given, `GNfinder` will process\nthe URL and will find names in the content of its body.\n"
           },
           "noBayes": {
             "type": "boolean",
