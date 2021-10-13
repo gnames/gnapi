@@ -43,10 +43,14 @@ paths:
       description: Detects scientific names in supplied text.
       requestBody:
         description: |
-          - text: a text in UTF-8 encoding.
+          - text: a text in UTF-8 encoding to search for scientific names. If this parameter is
+                  set, the `url` parameter is ignored.
+          - url: a url to a web-page or a document on Internet to search for scientific names.
+                 If both `text` and `url` parameters are given,
+                 the `text` parameter has precedence.
           - noBayes: a flag to disable Naive Bayes, detection.
           - oddDetails: an option to return back details how Bayes Odds are calculated.
-          - language: a language used of the text is used by Bayes algorithm. It can contain the following accepted values:
+          - language: a language of a text used by Bayes algorithm. It can contain the following accepted values:
           
           
                      -  "": empty strings, language set to default "eng" (English)
