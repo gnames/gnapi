@@ -2,7 +2,22 @@
 openapi: 3.0.0
 info:
   title: Global Names Verifier API
-  description: "The gnames app verifies (reconciles and resolves) strings to known\nscientific names.\n\nMatching strings to known scientific names involves 2 stages. The first\nstage is reconciliation. Scientific names can be represented in many\ndifferent ways. Sometimes authors and years of name description are\npresent, somtimes not. Sometimes ranks and / or annotations are included,\nsometimes not.  On top of that there are many different ways to abbreviate\nauthors, add or remove commas etc. The reconciliation step simplifies names\nto their core components and then compares them.\n\nResolution is the second step in this verification process, where the\nprogram searches for the taxonomic meaning of a name. Resolution uses\ntaxonomy-aware data sources that make it possible to find a clade/s that\nuse/s the name (from the reconciliation step) as a synonym or a currently\naccepted name.\n\nName matching is a multi-stage process. First, names are matched as they\nare.  If that does not work, matching uses fuzzy algorithms. If there is\nstill no match, we start to remove middle or end of the names components\nand try to match what is left.\n\nGo to the Global Names (https://resolver.globalnames.org/data_sources) to\nsee where names come from in this resource.  Note that you can specify\nwhich of these resource/s you prefer to use for this verification process.\n\nIf you found a bug or want to request a feature for API, create an issue at\nhttps://github.com/gnames/gnames/issues\n\nIf you use a web-site at https://verifier.globalnames.org or command line\nclient from https://github.com/gnames/gnverifier and want to report a\nbug or request a feature, create an issue at \nhttps://github.com/gnames/gnverifier/issues\n"
+  description: |
+    This RESTful API matches (reconciles and resolves) putative name-strings with known scientific names.
+    To be able to match spelling variants, it uses 'canonical forms` of names.
+    It is a multistage match, a failure transfers algorithm to the next stage.
+    It tries exact, fuzzy match, partial exact and partial fuzzy matches.
+    API uses data from more than 100 sources of scientific names (>20 million name-strings).
+    
+    Feature requests and bug reports -`https://github.com/gnames/gnames/issues`
+
+    For end-users there is a client to this API - GNverifier, a web-based and command line application.
+
+    Web - `https://verifier.globalnames.org`
+
+    Command Line - `https://github.com/gnames/gnverifier/releases/latest`
+
+
   contact:
     name: Dmitry Mozzherin
     url: https://github.com/dimus
@@ -72,7 +87,8 @@ paths:
         description: |
           - An array of strings to verify.
           - An array of preferred data-sources to verify against.
-          - A flag to request vernacular names.
+          - A flag to return all matches per data-source.
+          - A flag to capitalize first letter.
         content:
           application/json:
             schema:
@@ -107,6 +123,16 @@ paths:
         schema:
           type: string
           example: 1|12
+      - name: all_matches
+        in: query
+        description: |
+            Return all found matches per data-source, not only the best one.
+            Works only with preferred sources, ignores best result.
+        required: false
+        explode: true
+        schema:
+          type: boolean
+          example: false
       - name: capitalize
         in: query
         description: Capitalizes the first letter of a name-string.
@@ -272,12 +298,15 @@ components:
               user. Normally, only the "best result" is returned. If there are
               preferred data-sources, their results will be always returned
               as well (if there is a match).
+              
+              If the value is [0], the results for all matched sources is returned.
+              Such resuts are sorted by score.
             example: 1
-        withVernaculars:
+        withAllMatches:
           type: boolean
           description: |
-            If this flag is "true", return vernacular names as well.
-            (a placeholder, not implemented yet)
+            If "true", returns all found matches per source, not just the best match.
+            Results are still sorted by score. It works only for results from preferred sources.
           example: false
         withCapitalization:
           type: boolean
