@@ -3,6 +3,8 @@ openapi: 3.0.0
 info:
   title: Global Names Verifier API
   description: |
+    WARNING - GNVerifier (GNames) API did not reach stable version yet, some changes might occur.
+    
     This RESTful API matches (reconciles and resolves) putative name-strings with known scientific names.
     To be able to match spelling variants, it uses 'canonical forms` of names.
     It is a multistage match, a failure transfers algorithm to the next stage.
@@ -17,7 +19,6 @@ info:
 
     Command Line - `https://github.com/gnames/gnverifier/releases/latest`
 
-    This API did not reach stable version yet, some changes might occur.
 
   contact:
     name: Dmitry Mozzherin
