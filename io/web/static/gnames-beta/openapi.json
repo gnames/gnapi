@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Global Names Verifier API",
-    "description": "WARNING - GNVerifier (GNames) API did not reach stable version yet, some changes might occur.\n\nThis RESTful API matches (reconciles and resolves) putative name-strings with known scientific names.\nTo be able to match spelling variants, it uses 'canonical forms` of names.\nIt is a multistage match, a failure transfers algorithm to the next stage.\nIt tries exact, fuzzy match, partial exact and partial fuzzy matches.\nAPI uses data from more than 100 sources of scientific names (>20 million name-strings).\n\nFeature requests and bug reports -`https://github.com/gnames/gnames/issues`\n\nFor end-users there is a client to this API - GNverifier, a web-based and command line application.\n\nWeb - `https://verifier.globalnames.org`\n\nCommand Line - `https://github.com/gnames/gnverifier/releases/latest`\n",
+    "description": "WARNING - GNVerifier (GNames) API did not reach stable version yet, some changes might occur.\n\nThis RESTful API matches (reconciles and resolves) putative name-strings with known scientific names. To be able to match spelling variants, it uses 'canonical forms` of names. It is a multistage match, a failure transfers algorithm to the next stage. It tries exact, fuzzy match, partial exact and partial fuzzy matches.\nAPI also supports advanced search of species names.\nAPI uses data from more than 100 sources of scientific names (>20 million name-strings).\n\nFeature requests and bug reports -`https://github.com/gnames/gnames/issues`\n\nFor end-users there is a client to this API - GNverifier, a web-based and command line application.\n\nWeb - `https://beta.verifier.globalnames.org`\n\nCommand Line - `https://github.com/gnames/gnverifier/releases/latest`\n",
     "contact": {
       "name": "Dmitry Mozzherin",
       "url": "https://github.com/dimus",
@@ -16,12 +16,8 @@
   },
   "servers": [
     {
-      "url": "https://verifier.globalnames.org/api/v1",
-      "description": "Production gnames service"
-    },
-    {
-      "url": "https://virtserver.swaggerhub.com/dimus/gnames/1.0.0",
-      "description": "SwaggerHub API Auto Mocking"
+      "url": "https://verifier.globalnames.org/api/v0",
+      "description": "Scientific names verification service API (Beta)"
     }
   ],
   "paths": {
@@ -113,7 +109,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/VerifyParams"
+                "$ref": "#/components/schemas/VerificationInput"
               }
             }
           },
@@ -125,7 +121,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Verifications"
+                  "$ref": "#/components/schemas/VerificationOutput"
                 }
               }
             }
@@ -191,7 +187,63 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Verifications"
+                  "$ref": "#/components/schemas/VerificationOutput"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search": {
+      "post": {
+        "description": "Takes SearchInput object and runs faceted search.",
+        "requestBody": {
+          "description": "Spelled out input for faceted search.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Faceted search result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchOutput"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search/{query}": {
+      "get": {
+        "description": "Search allows to find names by a specific epithet, genus, author, year.",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "$ref": "#/components/schemas/SearchQuery"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Faceted search result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchOutput"
                 }
               }
             }
@@ -212,7 +264,7 @@
           "version": {
             "type": "string",
             "description": "The version number.",
-            "example": "v0.3.7"
+            "example": "v0.5.2"
           },
           "build": {
             "type": "string",
@@ -318,7 +370,8 @@
         },
         "description": "Metadata about a biodiversity data-aggregator."
       },
-      "VerifyParams": {
+      "VerificationInput": {
+        "description": "Parameters for verification of name-strings.",
         "required": [
           "nameStrings"
         ],
@@ -344,7 +397,7 @@
             ],
             "items": {
               "type": "integer",
-              "description": "The identifiers of the data-sources that are important for the\nuser. Normally, only the \"best result\" is returned. If there are\npreferred data-sources, their results will be always returned\nas well (if there is a match).\n\nIf the value is [0], the results for all matched sources is returned.\nSuch resuts are sorted by score.\n",
+              "description": "The identifiers of the data-sources that are important for the user. Normally, only the \"best result\" is returned. If there are preferred data-sources, their results will be always returned as well (if there is a match). If the value is [0], the results for all matched sources is returned.\n\nSuch resuts are sorted by score.\n",
               "example": 1
             }
           },
@@ -357,18 +410,277 @@
             "type": "boolean",
             "description": "If this flag is \"true\", name-strings that start with low-case\nletter will be capitalized.\n",
             "example": false
+          },
+          "withContext": {
+            "type": "boolean",
+            "description": "If true, calculates the most prevalent kingdom and finds the lowest clade that contains the majority of names. Uses Catalogue of life management classification.\n",
+            "example": true
+          },
+          "contextThreshold": {
+            "type": "number",
+            "description": "Sets the minimal percentage of names to calculate the `context`, the lowest clade containing majority of names. Can be set in the range of 0.5-1.0.\n",
+            "example": 0.6
           }
-        },
-        "description": "Parameters for verification of name-strings."
-      },
-      "Verifications": {
-        "type": "array",
-        "description": "An array of verification results.",
-        "items": {
-          "$ref": "#/components/schemas/Verification"
         }
       },
-      "Verification": {
+      "VerificationOutput": {
+        "required": [
+          "metadata"
+        ],
+        "type": "object",
+        "properties": {
+          "metadata": {
+            "type": "object",
+            "description": "metadata aboout verification.",
+            "items": {
+              "$ref": "#/components/schemas/VerificationMetadata"
+            }
+          },
+          "names": {
+            "type": "array",
+            "description": "An array of verification results.",
+            "items": {
+              "$ref": "#/components/schemas/Name"
+            }
+          }
+        }
+      },
+      "VerificationMetadata": {
+        "required": [
+          "namesNum"
+        ],
+        "type": "object",
+        "properties": {
+          "namesNum": {
+            "type": "integer",
+            "description": "The number of names in the input.",
+            "example": 2
+          },
+          "withAllSources": {
+            "type": "boolean",
+            "description": "Returns data from all sources where there was a match.",
+            "example": false
+          },
+          "withAllMatches": {
+            "type": "boolean",
+            "description": "If a data-source matched several times, return all matched results.",
+            "example": false
+          },
+          "withContext": {
+            "type": "boolean",
+            "description": "Uses Catalogue of Life classification to calculate the most prominent kingdom.\nAlso calculates the lowest clade that contains the majoriry of input names.\n",
+            "example": true
+          },
+          "withCapitalization": {
+            "type": "boolean",
+            "description": "Capitalizes the first letter of input.",
+            "example": false
+          },
+          "preferredSources": {
+            "type": "array",
+            "description": "The list of preferred sources. \nThis setting is ignored if `withAllSources` is true.\n",
+            "example": [
+              1,
+              12,
+              169
+            ],
+            "items": {
+              "type": "integer"
+            }
+          },
+          "contextThreshold": {
+            "type": "number",
+            "description": "Indicates the lowest percentage of all names that would make a clade show as a `context` of entered names.\nThe accepted range is 0.5-1.0, the default is 0.5001.\n",
+            "example": 0.6
+          },
+          "contextNamesNum": {
+            "type": "integer",
+            "description": "The number of names used for calculation of the context.\nOnly names that can match to names in Catalogue of Life are used.\n",
+            "example": 2
+          },
+          "context": {
+            "type": "string",
+            "description": "The name of the lowest clade that still contains the majority of the input names. It is calculated by matching input with Catalogue of Life data and\nuses its managerial classification.\nNames that did not match Catalogue of Life are not used for the calculation.\n",
+            "example": "Chordata"
+          },
+          "contextPercentage": {
+            "type": "number",
+            "description": "The percentage of names in the context clade.",
+            "example": 1
+          },
+          "kingdom": {
+            "type": "string",
+            "description": "The kingdom that contains the majority of names according to Catalogue of Life.",
+            "example": "Animalia"
+          },
+          "kingdomPercentage": {
+            "type": "number",
+            "description": "The percentage of names in the main kingdom.",
+            "example": 1
+          },
+          "Kingdoms": {
+            "type": "array",
+            "description": "Distribution of names over matched kingdoms.",
+            "items": {
+              "$ref": "#/components/schemas/Kingdom"
+            }
+          }
+        }
+      },
+      "Kingdom": {
+        "type": "object",
+        "required": [
+          "name",
+          "namesNum",
+          "percentage"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Kingdom's name.",
+            "example": "Animalia"
+          },
+          "namesNum": {
+            "type": "integer",
+            "description": "The number of names, that matched Catalogue of Life for the kingdom.",
+            "example": 2
+          },
+          "percentage": {
+            "type": "number",
+            "description": "The percentage of names matched the kingdom.",
+            "example": 1
+          }
+        }
+      },
+      "SearchInput": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "$ref": "#/components/schemas/SearchQuery"
+          },
+          "withAllResults": {
+            "type": "boolean",
+            "description": "Provide all found results, not only `bestResult`",
+            "example": false
+          },
+          "warnings": {
+            "type": "array",
+            "description": "Warnings about discrepancies in the input.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "dataSourceIds": {
+            "type": "array",
+            "description": "Limits search data to results from certain data-sources.",
+            "example": [
+              1,
+              12
+            ],
+            "items": {
+              "type": "integer",
+              "description": "A data-source ID where to search for a name."
+            }
+          },
+          "parentTaxon": {
+            "type": "string",
+            "description": "Limits search data to records containing a particular clade in the classification field.\nUses classification of the first data-source given in `dataSourceIds`.\nIf `dataSourcesIds` is empty, uses Catalogue of Life classification.\n",
+            "example": "Chordata"
+          },
+          "nameString": {
+            "type": "string",
+            "description": "A convenience field that allows to enter several fields as a one string.\nInstead of providing genus, species in separate fields, they can be given in a `nameString`.\nData from `nameString` sould overwrite corresponding data fields.\nFor example `B. bubo` name string will overwrite `genus` and `species` fields.\n",
+            "example": "B. bubo"
+          },
+          "genus": {
+            "type": "string",
+            "description": "Genus data, can be abbreviated.",
+            "example": "Bubo"
+          },
+          "species": {
+            "type": "string",
+            "description": "Specific epithet, can be abbreviated.",
+            "example": "bubo"
+          },
+          "speciesInfra": {
+            "type": "string",
+            "description": "An infraspecific epithet, can be abbreviated."
+          },
+          "speciesAny": {
+            "type": "string",
+            "description": "Either specific, or infraspecific epithet."
+          },
+          "author": {
+            "type": "string",
+            "description": "Author's name, can be abbreviated.",
+            "example": "Linn."
+          },
+          "year": {
+            "type": "integer",
+            "description": "Name's year. Ignored if there is a `yearRange`."
+          },
+          "yearRange": {
+            "type": "object",
+            "description": "Limits search to names within the range.\nIf range does not have one of the values, range is open on that side.\nAt least one value has to be present. If range is given, `year` field is ignored.\n",
+            "properties": {
+              "yearStart": {
+                "type": "integer",
+                "description": "The lower border of the range.",
+                "example": 1750
+              },
+              "yearEnd": {
+                "type": "integer",
+                "description": "The higher border of the range.",
+                "example": 1850
+              }
+            }
+          }
+        }
+      },
+      "SearchOutput": {
+        "type": "object",
+        "required": [
+          "metadata"
+        ],
+        "properties": {
+          "metadata": {
+            "$ref": "#/components/schemas/SearchMetadata"
+          },
+          "names": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Name"
+            }
+          }
+        }
+      },
+      "SearchMetadata": {
+        "type": "object",
+        "required": [
+          "input",
+          "namesNumber"
+        ],
+        "properties": {
+          "input": {
+            "$ref": "#/components/schemas/SearchInput"
+          },
+          "namesNumber": {
+            "type": "integer",
+            "description": "The number of found names.",
+            "example": 2
+          },
+          "error": {
+            "type": "string",
+            "description": "Provides an error of a search, if it happens."
+          }
+        }
+      },
+      "SearchQuery": {
+        "type": "string",
+        "description": "Query for advanced search. Query can include the following components.\n  \n* genus `g:B.`, `g:Bub.`, `g:Bubo` * species `sp:bubo`, `sp:gallop.` * infraspecies `isp:bubo`, `isp:interp.` * either species or infraspecies (all sp) `asp:bubo` * data-sources IDs `ds:1,2,3` * parent taxon `tx:Aves`. Uses classification of the first data-source from `d  s:`. If data-sources are not set, uses Catalogue of Life. * author `au:Linnaeus`, `au:Linn.`, `au:L.` * year `y:1888`, `y:1888-1900`, `y:1888-`, `y:-1888` * a \"name\", allows to combine some components together `n:B. bubo`\n    \nThe query must contain the species or infraspecies data\n",
+        "example": "n:B. bubo ds:1,2 au:Linn. y:1700-"
+      },
+      "Name": {
         "required": [
           "curation",
           "dataSourcesNum",
@@ -391,7 +703,7 @@
           },
           "matchType": {
             "type": "string",
-            "description": "Indicates the quality of verification.\n- `NoMatch` (no matched name found)\n- `Exact` (exact match to a canonical form or a verbatim string)\n- `Fuzzy` (fuzzy match to a canonical form)\n- `PartialExact` (match after removing last or middle epithets)\n- `PartialFuzzy` (fuzzy partial match after removing some parts)\n",
+            "description": "Indicates the quality of verification.\n- `NoMatch` (no matched name found)\n- `Exact` (exact match to a canonical form or a verbatim string)\n- `Fuzzy` (fuzzy match to a canonical form)\n- `PartialExact` (match after removing last or middle epithets)\n- `PartialFuzzy` (fuzzy partial match after removing some parts)\n- `FacetedSearch` (match by a faceted search)\n",
             "example": "Fuzzy"
           },
           "bestResult": {
@@ -536,11 +848,11 @@
           },
           "matchType": {
             "type": "string",
-            "description": "A category that describes the matching type between the input\nname-string and the matched name from the data-source. The\ncategories are\n- `NoMatch`\n- `Exact`\n- `Fuzzy`\n- `PartialExact`\n- `PartialFuzzy`\n",
+            "description": "A category that describes the matching type between the input\nname-string and the matched name from the data-source. The\ncategories are\n- `NoMatch`\n- `Exact`\n- `Fuzzy`\n- `PartialExact`\n- `PartialFuzzy`\n- `FacetedSearch`\n",
             "example": "Fuzzy"
           }
         },
-        "description": "A successsful match of input name-string to a record in a data-source.\nResultData with the highest score appears as a best match.\nResultData from a preferred data-sources are aggregated into\npreferredResults array.\n\nScoring takes the following into account (sorted from the highest\nimpact to the least)\n- infraspecific rank (`Aus bus var. cus` vs `Aus bus f. cus`)\n- fuzzy matching edit distance (less is better)\n- authorship matching\n- accepted name vs synonyms (accepted name wins)\n"
+        "description": "A successsful match of input name-string to a record in a data-source.\nResultData with the highest score appears as a best match.\nResultData from a preferred data-sources are aggregated into\npreferredResults array.\n\nScoring takes the following into account (sorted from the highest\nimpact to the least)\n- infraspecific rank (`Aus bus var. cus` vs `Aus bus f. cus`)\n- fuzzy matching edit distance (less is better)\n- authorship matching\n- accepted name vs synonyms (accepted name wins)\n- parsing quality\n"
       }
     }
   }
