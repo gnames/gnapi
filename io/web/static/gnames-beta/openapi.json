@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Global Names Verifier API",
+    "title": "Global Names Verifier API (Beta)",
     "description": "WARNING - GNVerifier (GNames) API did not reach stable version yet, some changes might occur.\n\nThis RESTful API matches (reconciles and resolves) putative name-strings with known scientific names. To be able to match spelling variants, it uses 'canonical forms` of names. It is a multistage match, a failure transfers algorithm to the next stage. It tries exact, fuzzy match, partial exact and partial fuzzy matches.\nAPI also supports advanced search of species names.\nAPI uses data from more than 100 sources of scientific names (>20 million name-strings).\n\nFeature requests and bug reports -`https://github.com/gnames/gnames/issues`\n\nFor end-users there is a client to this API - GNverifier, a web-based and command line application.\n\nWeb - `https://beta.verifier.globalnames.org`\n\nCommand Line - `https://github.com/gnames/gnverifier/releases/latest`\n",
     "contact": {
       "name": "Dmitry Mozzherin",
@@ -628,11 +628,13 @@
           },
           "speciesInfra": {
             "type": "string",
-            "description": "An infraspecific epithet, can be abbreviated."
+            "description": "An infraspecific epithet, can be abbreviated.",
+            "example": ""
           },
           "speciesAny": {
             "type": "string",
-            "description": "Either specific, or infraspecific epithet."
+            "description": "Either specific, or infraspecific epithet.",
+            "example": ""
           },
           "author": {
             "type": "string",
@@ -641,7 +643,8 @@
           },
           "year": {
             "type": "integer",
-            "description": "Name's year. Ignored if there is a `yearRange`."
+            "description": "Name's year. Ignored if there is a `yearRange`.",
+            "example": 0
           },
           "yearRange": {
             "type": "object",
@@ -701,7 +704,7 @@
       },
       "SearchQuery": {
         "type": "string",
-        "description": "Query for advanced search. Query can include the following components.\n  \n* genus `g:B.`, `g:Bub.`, `g:Bubo` * species `sp:bubo`, `sp:gallop.` * infraspecies `isp:bubo`, `isp:interp.` * either species or infraspecies (all sp) `asp:bubo` * data-sources IDs `ds:1,2,3` * parent taxon `tx:Aves`. Uses classification of the first data-source from `d  s:`. If data-sources are not set, uses Catalogue of Life. * author `au:Linnaeus`, `au:Linn.`, `au:L.` * year `y:1888`, `y:1888-1900`, `y:1888-`, `y:-1888` * a \"name\", allows to combine some components together `n:B. bubo`\n    \nThe query must contain the species or infraspecies data\n",
+        "description": "Query for advanced search. Query can include the following components.\n  \n* genus `g:B.`, `g:Bub.`, `g:Bubo`\n* species `sp:bubo`, `sp:gallop.`\n* infraspecies `isp:bubo`, `isp:interp.`\n* either species or infraspecies (all sp) `asp:bubo`\n* data-sources IDs `ds:1,2,3`\n* parent taxon `tx:Aves`. Uses classification of the first data-source from `d  s:`. If data-sources are not set, uses Catalogue of Life.\n* author `au:Linnaeus`, `au:Linn.`, `au:L.`\n* year `y:1888`, `y:1888-1900`, `y:1888-`, `y:-1888`\n* a \"name\", allows to combine some components together `n:B. bubo`\n    \nThe query must contain the species or infraspecies data\n",
         "example": "n:B. bubo ds:1,2 au:Linn. y:1700-"
       },
       "Name": {

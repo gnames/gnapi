@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: Global Names Verifier API
+  title: Global Names Verifier API (Beta)
   description: >
     WARNING - GNVerifier (GNames) API did not reach stable version yet, some
     changes might occur.
@@ -576,9 +576,11 @@ components:
         speciesInfra:
           type: string
           description: An infraspecific epithet, can be abbreviated.
+          example: ''
         speciesAny:
           type: string
           description: Either specific, or infraspecific epithet.
+          example: ''
         author:
           type: string
           description: Author's name, can be abbreviated.
@@ -586,6 +588,7 @@ components:
         year:
           type: integer
           description: Name's year. Ignored if there is a `yearRange`.
+          example: 0
         yearRange:
           type: object
           description: |
@@ -641,7 +644,7 @@ components:
           
     SearchQuery:
       type: string
-      description: >
+      description: |
         Query for advanced search. Query can include the following components.
           
         * genus `g:B.`, `g:Bub.`, `g:Bubo`
