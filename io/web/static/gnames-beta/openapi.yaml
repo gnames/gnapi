@@ -168,7 +168,7 @@ paths:
           explode: true
           schema:
             type: number
-            example: falsejj
+            example: 0.5
       responses:
         '200':
           description: An array of verification results.
@@ -890,6 +890,8 @@ components:
             - `PartialFuzzy`
             - `FacetedSearch`
           example: Fuzzy
+        scoreDetails:
+          $ref: '#/components/schemas/ScoreDetails'
       description: |
         A successsful match of input name-string to a record in a data-source.
         ResultData with the highest score appears as a best match.
@@ -903,3 +905,27 @@ components:
         - authorship matching
         - accepted name vs synonyms (accepted name wins)
         - parsing quality
+    
+    ScoreDetails:
+      description: |
+        Explains which score properties participated in sorting of the data.
+        Properties located higher provide more weight in the sorting.
+        All properties vary from 0 to 1, where 0 has no influence on sorting,
+        and 1 has the highest priority for sorting.
+      type: object
+      required:
+        - infraSpecificRankScore
+        - fuzzyLessScore
+        - curatedDataScore
+        - authorMatchScore
+        - acceptedNameScore
+        - parsingQualityScore
+      properties:
+        infraSpecificRankScore:
+          description:  Is at maximum if infraspecific ranks match.
+        fuzzyLessScore: It is at maximum for exact matches. 
+        curatedDataScore: It is at maximum for data-sources marked as `curated`.
+        authorMatchScore: It is at maximum if authors and year matched completely.
+        acceptedNameScore: It is at maximum if matched name marked as currently accepted.
+        parsingQualityScore: It is at maximum if no name-parsing problems were detected.
+      

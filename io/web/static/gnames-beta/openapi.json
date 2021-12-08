@@ -201,7 +201,7 @@
             "explode": true,
             "schema": {
               "type": "number",
-              "example": "falsejj"
+              "example": 0.5
             }
           }
         ],
@@ -877,9 +877,34 @@
             "type": "string",
             "description": "A category that describes the matching type between the input\nname-string and the matched name from the data-source. The\ncategories are\n- `NoMatch`\n- `Exact`\n- `Fuzzy`\n- `PartialExact`\n- `PartialFuzzy`\n- `FacetedSearch`\n",
             "example": "Fuzzy"
+          },
+          "scoreDetails": {
+            "$ref": "#/components/schemas/ScoreDetails"
           }
         },
         "description": "A successsful match of input name-string to a record in a data-source.\nResultData with the highest score appears as a best match.\nResultData from selected data-sources are aggregated into\n`results` array.\n\nScoring takes the following into account (sorted from the highest\nimpact to the least)\n- infraspecific rank (`Aus bus var. cus` vs `Aus bus f. cus`)\n- fuzzy matching edit distance (less is better)\n- authorship matching\n- accepted name vs synonyms (accepted name wins)\n- parsing quality\n"
+      },
+      "ScoreDetails": {
+        "description": "Explains which score properties participated in sorting of the data.\nProperties located higher provide more weight in the sorting.\nAll properties vary from 0 to 1, where 0 has no influence on sorting,\nand 1 has the highest priority for sorting.\n",
+        "type": "object",
+        "required": [
+          "infraSpecificRankScore",
+          "fuzzyLessScore",
+          "curatedDataScore",
+          "authorMatchScore",
+          "acceptedNameScore",
+          "parsingQualityScore"
+        ],
+        "properties": {
+          "infraSpecificRankScore": {
+            "description": "Is at maximum if infraspecific ranks match."
+          },
+          "fuzzyLessScore": "It is at maximum for exact matches.",
+          "curatedDataScore": "It is at maximum for data-sources marked as `curated`.",
+          "authorMatchScore": "It is at maximum if authors and year matched completely.",
+          "acceptedNameScore": "It is at maximum if matched name marked as currently accepted.",
+          "parsingQualityScore": "It is at maximum if no name-parsing problems were detected."
+        }
       }
     }
   }
