@@ -897,13 +897,35 @@
         ],
         "properties": {
           "infraSpecificRankScore": {
-            "description": "Is at maximum if infraspecific ranks match."
+            "description": "Is at maximum if infraspecific ranks match.",
+            "type": "number",
+            "example": 0
           },
-          "fuzzyLessScore": "It is at maximum for exact matches.",
-          "curatedDataScore": "It is at maximum for data-sources marked as `curated`.",
-          "authorMatchScore": "It is at maximum if authors and year matched completely.",
-          "acceptedNameScore": "It is at maximum if matched name marked as currently accepted.",
-          "parsingQualityScore": "It is at maximum if no name-parsing problems were detected."
+          "fuzzyLessScore": {
+            "description": "It is at maximum for exact matches.",
+            "type": "number",
+            "example": 1
+          },
+          "curatedDataScore": {
+            "description": "It is at maximum for data-sources marked as `curated`.",
+            "type": "number",
+            "example": 1
+          },
+          "authorMatchScore": {
+            "description": "It is at maximum if authors and year matched completely.",
+            "type": "number",
+            "example": 0.5
+          },
+          "acceptedNameScore": {
+            "description": "It is at maximum if matched name marked as currently accepted.",
+            "type": "number",
+            "example": 1
+          },
+          "parsingQualityScore": {
+            "description": "It is at maximum if no name-parsing problems were detected.",
+            "type": "number",
+            "example": 1
+          }
         }
       }
     }
