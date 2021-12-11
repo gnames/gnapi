@@ -195,7 +195,9 @@ paths:
                 $ref: '#/components/schemas/SearchOutput'
   '/search/{query}':
     get:
-      description: Search allows to find names by a specific epithet, genus, author, year.
+      description: |
+        Search allows to find names by a specific epithet, genus, author, year.
+        For the query language description see the `SearchQuery` docs below.
       parameters:
         - name: query
           in: path
