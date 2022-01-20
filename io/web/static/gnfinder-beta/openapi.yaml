@@ -1,0 +1,755 @@
+openapi: 3.0.0
+info:
+  title: Global Names Finder API (Current)
+  description: |
+    GNfinder takes a text in UTF-8 encoding, detects and verifies scientific names out of the text.
+    
+    It is possilble to use the API to find names in files
+    
+    ```
+    curl -v -F sources[]=1 -F sources[]=12 -F file=@path/to/file.pdf \
+      https://finder.globalnames.org/api/v0/find
+    ```
+
+
+    If you found a bug or want to request a feature for the API, create an issue at
+    
+    `https://github.com/gnames/gnfinder/issues`
+  contact:
+    name: Dmitry Mozzherin
+    url: 'https://github.com/dimus'
+    email: dmozzherin@gmail.com
+  license:
+    name: MIT
+    url: 'https://opensource.org/licenses/MIT'
+  version: 0.18.0
+servers:
+  - url: 'https://gnfinder.globalnames.org/api/v0'
+    description: Production GNfinder service
+paths:
+  /ping:
+    get:
+      responses:
+        '200':
+          description: Use this endpoint to see if service is running.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: pong
+  /version:
+    get:
+      responses:
+        '200':
+          description: The version of GNfinder.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Version'
+  /find:
+    post:
+      description: Detects scientific names in supplied text or URL.
+      requestBody:
+        description: |
+          Takes a UTF8-encoded text, or a URL and detects scientific names in their content.
+          For details and documentation see the Schema tab.
+          
+          It is also possible to upload a file using the following example
+          
+          
+          ```
+          curl -v -F sources[]=1 -F sources[]=12 -F file=@path/to/file.pdf \
+            https://finder.globalnames.org/api/v0/find
+          ```
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FinderParams'
+        required: true
+      responses:
+        '200':
+          description: An array of verification results.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinderResult'
+components:
+  schemas:
+    Version:
+      required:
+        - build
+        - version
+      type: object
+      properties:
+        version:
+          type: string
+          description: The version number.
+          example: v0.17.0
+        build:
+          type: string
+          description: The compilation timestamp.
+          example: '2020-11-26_17:39:49UTC'
+      description: The version number and build time of the `gnames` app.
+    FinderParams:
+      type: object
+      properties:
+        text:
+          type: string
+          example: |
+            Thalictroides, 18s per doz.
+            vitifoiia, Is. 6d. each
+            Calopogon, or Cymbidium pul-
+
+            cheilum, 1 5s. per doz.
+            Conostylis americana, 2i. 6d.
+          description: >
+            Contains the text which will be checked for scientific names.
+            If this parameter is not empty, the `url` paramter is ignored.
+        url:
+          type: string
+          example: 'https://en.wikipedia.org/wiki/Monochamus_galloprovincialis'
+          description: >
+            If `text` parameter is empty, and `url` is given, `GNfinder` will process the URL and will find names in the content of its body.
+        format:
+          type: string
+          example: 'tsv'
+          description: >
+            sets the output format. It can be set to:
+              
+              - csv (default)
+              - tsv
+              - json
+        bytesOffset:
+          type: boolean
+          example: false
+          description: |
+            This flag changes how the position of a detected name in text is calculated.
+            Normally a name's `start` and `end` positions are given as the number of `UTF-8` characters from the beginning of the text.
+            If `bytesOffset` flag is `true`, the `start` and `end` offsets are recalculated in the number of `bytes`.
+        returnContent:
+          type: boolean
+          example: false
+          description: |
+            If this flag is `true`, the text used for the name detection is returned back.
+            This flag is especially useful if the input was not a plain UTF-8 text and had to be prepared for name-finding.
+            Then the returned content can be used together with `start` and `end` fields of detected
+            name-strings to locate the strings in the text.
+        uniqueNames:
+          type: boolean
+          example: true
+          description: |
+            If this flag is `true`, the output returns a list of unique names, instead of a list of all name occurrences.
+            Unique list of names does not provide position information of a name in the text.
+        noBayes:
+          type: boolean
+          example: false
+          description: |
+            If this flag is `true`, only heuristic algorithms are used for name detection.
+        oddsDetails:
+          type: boolean
+          example: false
+          description: |
+            If true, the resul will contain odds of all features used for calculation of NaiveBayes odds.
+            Odds describe probabiliby of a name to be 'real'. The higher the odds, the higher the probability that a dectected name is not a falst positive.
+            Odds are calculated by multiplication of the odds of separate features. 
+            Odds details explain how the final odds value is calculated.
+        language:
+          type: string
+          example: eng
+          description: |
+            The language of the text. Language value is used for calculation of Bayesian odds.
+            If this parameter is not given, english language is used by default.
+            Currently only English and German languages are supported.
+          enum:
+            - eng
+            - deu
+            - detect
+        wordsAround:
+          type: integer
+          example: 0
+          description: |
+            Allows to see the context surrounding a name-string.
+            The `wordsAround` parameter sets the number of words returned to output, which are located immideately before or after a detected name.
+            Default is 0, maximum value is 5.
+          enum:
+            - 0
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+        verification:
+          type: boolean
+          example: true
+          description: |
+            When this flag is true, there is an addional verification step for detected names.
+            This step requires internet connection and uses `https://gnames.globalnames.org/api/v0` for verification queries.
+        sources:
+          type: array
+          example:
+            - 1
+            - 12
+            - 169
+          items:
+            type: integer
+            description: |
+              The identifiers of the data-sources that are important for the user.
+              Normally, only the "best result" is returned.
+              If there are preferred data-sources, their results will be always returned as well (if there is a match).
+            example: 1
+    FinderResult:
+      required:
+        - metadata
+        - names
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        names:
+          $ref: '#/components/schemas/Names'
+    Metadata:
+      required:
+        - nameFindingSec
+        - totalSec
+        - date
+        - gnfinderVersion
+        - withBayes
+        - withPositionInBytes
+        - withOddsAdjustment
+        - withVerification
+        - wordsAround
+        - language
+        - languageDetected
+        - withLanguageDetection
+        - totalWords
+        - totalNameCandidates
+        - totalNames
+      type: object
+      properties:
+        date:
+          type: string
+          description: The date of running a GNfinder query.
+          example: '2021-04-26T11:19:11.609Z'
+        gnfinderVersion:
+          type: string
+          description: The version of GNfinder.
+          example: v0.18.1
+        inputFile:
+          type: string
+          example: "names.txt"
+          description: |
+            Appers if a file was sent to the API for the name detection.
+            An example of sending a file to the API via POST is given at the start of the API documentation.
+        textExtractionSec:
+          type: number
+          example: 0.107
+          description: |
+            The time spent on convertion of a file to a plain UTF8-encoded text.
+            This value appears only if a file was sent to the API for name-detection.
+        nameFindingSec:
+          type: number
+          example: 0.032
+          description: The time spent on the name-finding process.
+        nameVerifSec:
+          type: number
+          example: 0.544
+          description: The time spent on the name-verification.
+        totalSec:
+          type: number
+          example: 0.683
+          description: Total time spent on all required subprocessess.
+        withBayes:
+          type: boolean
+          example: true
+          description: |
+            Indicates if Naive Bayes algorithms participated in the names detection.
+            By default it would be true.
+        withOddsAdjustment:
+          type: boolean
+          example: false
+          description: |
+            If true, GNfinder recalculates prior odds according to the number of names found in the text divided by the number of capitalized words. 
+            If the text has less than 10 capitalized words, this setting is ignored. 
+            By default it would be false.
+        withPositionInBytes:
+          type: boolean
+          example: false
+          description: |
+            This flag changes how the position of a detected name in text is calculated.
+            Normally a name's `start` and `end` positions are given as the number of `UTF-8` characters from the beginning of the text.
+            If the flag is `true`, the `start` and `end` offsets are recalculated in the number of `bytes`.
+        withVerification:
+          type: boolean
+          example: false
+          description: |
+            If true, there is an additional verification step that uses a remote `https://gnames.globalnames.org/api/v1` service to check if found names do exist in a variety of biodiversity databases.
+            By default it would be `false`.
+        wordsAround:
+          type: integer
+          example: 0
+          description: |
+            Indicates the number of words before and after detected name that will be provided in the results.
+            By default it would be 0.
+        language:
+          type: string
+          description: |
+            Indicates the language that was used for calculation of Bayes' odds.
+          example: eng
+        languageDetected:
+          type: string
+          description: |
+            Provides the value of automatically detected language.
+          example: deu
+        withLanguageDetection:
+          type: boolean
+          description: |
+            If true, the language was detected automatically.
+        totalWords:
+          type: integer
+          example: 20
+          description: |
+            Indicates the number of words in the document detected by a tokenizer function.
+        totalCandidates:
+          type: integer
+          example: 5
+          description: |
+            Provides the number of capitalized words that could be a start of a scientific name.
+            This number can be used for calculating a document-specific prior odds `totalNames/totalCandidates`.
+        totalNames:
+          type: integer
+          example: 2
+          description: The number of detectd names in the text.
+        kingdoms:
+          type: array
+          description: Distribution of names verified to the Catalogue of Life between kingdoms.
+          items:
+            $ref: '#/components/schemas/Kingdom'
+        mainClade:
+          type: string
+          example: Araneae
+          description: |
+            The lowest clade that contains the majority of detected names.
+            We use a subset of detected names that did get verified to a Catalogue of Life taxa.
+        mainCladeRank:
+          type: string
+          example: order
+          description: the rank of the `mainClade`
+        mainCladePercentage:
+          type: number
+          example: 0.67
+          description: the percentage of names in `mainClade` to the total number of all verified to Catalogue of Life names.
+    Kingdom:
+      type: object
+      required:
+        - namesNumber
+        - kingdom
+        - namesPercentage
+      properties:
+        namesNumber:
+          type: integer
+          example: 4
+          description: |
+            The number of detected names, that did get verified to the Catalogue of Life and do belong to the Kingdom.
+        kindom:
+          type: string
+          example: Animalia
+          description: The kingdom name.
+        namesPercentage:
+          type: number
+          example: 0.65
+          description: |
+            `namesNumber` for the `kingdom` divided by the sum of `namesNumbers` for all `kingdoms`.
+    Names:
+      type: array
+      description: |
+        Provides information about names detected by GNfinder.
+      items:
+        $ref: '#/components/schemas/Name'
+    Name:
+      required:
+        - cardinality
+        - verbatim
+        - name
+        - start
+        - end
+      type: object
+      description: Describes data about a detected name.
+      properties:
+        cardinality:
+          type: integer
+          description: |
+            A cardinality value of the detected name.
+            Binomial names have cardinality 2, uninomials have cardinalty 1 etc.
+            Cardinality 0 means we cannot determine cardinality of a string.
+          example: 2
+        verbatim:
+          type: string
+          description: |
+            Detected name, as it was found in text with new lines, punctuations etc.
+            New lines for better readability are substituted with '␤' character.
+          example: 'Cymbidium pul-␤␤cheilum,'
+        name:
+          type: string
+          description: |
+            String representation of a name after cleaning.
+            If a name contains non-standard characters introduced during optical character recognition, they are substituted with '�' character.
+        oddsLog10:
+          type: number
+          description: |
+            Odds reflect a probability that some feature is true.
+            In our case the higher the odds, the higher is the probability that a detected name is 'real'.
+            Equal odds are a ration 1/1, meaning for every 'true' event there is one 'false' event, the same can be expressed as a probability 0.5.
+            We provide a log base 10 of odds.
+            That means that log10 2 is the same as 100, log1 is the same as 10 log10 0 is the same as 1.
+            If log is negative, it means Bayes algorithm considers an event to be unlikely.
+          example: 7.276255952698947
+        oddsDetails:
+          type: array
+          description: shows how final odds were calculated (mostly for debugging purposes).
+          items:
+            type: object
+            required:
+              - feature
+              - odds
+            properties:
+              feature:
+                type: string
+                example: "uniLen: 7"
+                description: |
+                  A Naive Bayes feature used for calculating odds.
+                  The feature consists of its name or type, and a value.
+                  For example 'uniLen' name is the length of the uninomial and the value of the length is 7 characters.
+              odds:
+                type: number
+                example: 2.013
+                description: log10 of the odds calculated for the feature using precalculated weights for the feature.
+  
+        start:
+          type: integer
+          description: |
+            The offset in UTF-8 characters from the beginning of the text to the start of a name.
+            If `withPositionInBytes` is true, offset is calculated in bytes instead.
+          example: 107
+        offsetEnd:
+          type: integer
+          description: |
+            The offset in UTF-8 characters from the beginning of the text to the end of a name.
+            If `withPositionInBytes` is true, offset is calculated in bytes instead.
+          example: 128
+        annotNomen:
+          type: string
+          description: |
+            If a name has a nomenclatural annotation (for example "Aus bus sp. nov") this field will provide the verbatim form of the annotation.
+          example: sp. nov.
+        annotNomenType:
+          type: string
+          description: |
+            Category of the nomenclatural annotation.
+            The same annotation type might have significant variability in literature.
+            This property provides a normalized value of an annotation.
+          enum:
+            - NO_ANNOT
+            - SP_NOV
+            - SUBSP_NOV
+            - COMB_NOV
+        wordsBefore:
+          type: array
+          description: |
+            A list of words that preceed a name.
+            The number of words is determined by WordsAround parameter.
+          items:
+            type: string
+          example:
+            - per
+            - dos
+        wordsAfter:
+          type: array
+          description: |
+            A list of words that appear right after a name.
+            The number of words is determined by WordsAround parameter.
+          items:
+            type: string
+          example:
+            - i
+            - d
+        verification:
+          $ref: '#/components/schemas/Verification'
+    Verification:
+      required:
+        - curation
+        - dataSourcesNum
+        - input
+        - inputId
+        - matchType
+      type: object
+      properties:
+        id:
+          type: string
+          description: |
+            An UUID v5 generated from the input string using "globalnames.org"
+            DNS domain name as a seed. This UUID can be used as
+            a distributed global unique identifier of the string and
+            can be created independently in any popular programming language.
+          format: uuid
+          example: 2284b0d6-d965-5c39-ace5-3ef673da6691
+        name:
+          type: string
+          description: >-
+            An input name-string entered for the verification, or found by
+            search.
+          example: Pomatomus soltator
+        matchType:
+          type: string
+          description: |
+            Indicates the quality of verification.
+            - `NoMatch` (no matched name found)
+            - `Exact` (exact match to a canonical form or a verbatim string)
+            - `Fuzzy` (fuzzy match to a canonical form)
+            - `PartialExact` (match after removing last or middle epithets)
+            - `PartialFuzzy` (fuzzy partial match after removing some parts)
+            - `FacetedSearch` (match by a faceted search)
+          example: Fuzzy
+        bestResult:
+          $ref: '#/components/schemas/ResultData'
+        results:
+          type: array
+          description: Matched records found in selected data-sources.
+          items:
+            $ref: '#/components/schemas/ResultData'
+        dataSourcesNum:
+          type: integer
+          description: |
+            The number of data-sources where the string had a
+            match to a scientific name.
+          example: 12
+        curation:
+          type: string
+          description: |
+            The best curation level from matched
+            data-sources. Possible values are
+            - `NotCurated`
+            - `AutoCurated`
+            - `Curated`
+
+            If this flag has a `NotCurated` value, it does not mean that
+            original data-source is not curated, rather it means the curation
+            level is not known to `gnames`.
+          example: Curated
+        error:
+          type: string
+          description: |
+            Normally an empty string. In case of an unexpected error, 
+            it will be shown here. If error is not empty, it means
+            that matching failed because of a bug in the system.
+      description: Verification result for a particular input name-string.
+    ResultData:
+      type: object
+      properties:
+        dataSourceId:
+          type: integer
+          description: |
+            An ID of the data-source where the match was found. This is a
+            local ID at GlobalNames and it has been stable for more than
+            10 years.
+          example: 1
+        dataSourceTitleShort:
+          type: string
+          description: A simplified/abbreviated title of the data-source.
+          example: Catalogue of Life
+        curation:
+          type: string
+          description: |
+            A curation level for the record's data-source. If data-source
+            is known to be curated, there is less risk of misspelling of the
+            matched name.
+          example: Curated
+        recordId:
+          type: string
+          description: |
+            The record ID of the `matchedName` from the data-source.
+            If the data-source does not provide record ID, the ID is
+            generated by `gnames` and is prepended with a 'gn_' prefix.
+          example: TX123
+        globalId:
+          type: string
+          description: 'A globally unique record ID (UUID, LSID, DOI etc).'
+          example: 2284b0d6-d965-5c39-ace5-3ef673da6691
+        localId:
+          type: string
+          description: |
+            An additional ID that is used internally by the data-source.
+            Quite often such IDs are used by data-sources to generate URLs to
+            their records.
+          example: '33'
+        outlink:
+          type: string
+          description: |
+            An external URL provided by the data-source for the record.
+          example: >-
+            http://www.catalogueoflife.org/annual-checklist/2019/details/species/id/d9ac988f149a3d2822d71c673be09317
+        entryDate:
+          type: string
+          description: |
+            A date when a record was harvested to gnames. It follows a
+            pattern 'YYYY-MM-DD'.
+          example: '2020-06-30T00:00:00.000Z'
+        matchedName:
+          type: string
+          description: A verbatim scientfic name matched to the input.
+          example: 'Pomatomus saltator (Linnaeus, 1766)'
+        matchedCardinality:
+          type: integer
+          description: |
+            A cardinality value of the matched name. Binomial names
+            have cardinality 2, uninomials have cardinalty 1 etc.
+            Cardinality 0 means we cannot determine cardinality of a string.
+          example: 2
+        matchedCanonicalSimple:
+          type: string
+          description: |
+            The most normalized canonical form of a scientific name. It
+            does not contain infraspecific ranks, hybrid signs for named
+            hybrids, authors or years. This canonical form is the best for
+            matching names.
+          example: Pomatomus saltator
+        matchedCanonicalFull:
+          type: string
+          description: |
+            A less normalized canonical form of the matched name 
+            with more details. This canonical form is better for
+            presentation and creating matching scores.
+          example: Pomatomus saltator
+        currentRecordId:
+          type: string
+          description: |
+            If the data-source allows taxonomic resolution of a name,
+            `currentRecordId` will contain the data-source record ID of
+            the currently accepted name for the matched taxon. 
+          example: TX543
+        currentName:
+          type: string
+          description: |
+            The currently accepted name for the taxon according to the
+            data-source.
+          example: 'Pomatomus saltatrix (Linnaeus, 1766)'
+        currentCardinality:
+          type: integer
+          description: |
+            Cardinality of the currently accepted name.
+          example: 2
+        currentCanonicalSimple:
+          type: string
+          description: |
+            The most normalized canonical form of the currently
+            accepted scientific name.
+          example: Pomatomus saltatrix
+        currentCanonicalFull:
+          type: string
+          description: |
+            A less normalized canonical form of the currently accepted
+            scientific name.
+          example: Pomatomus saltatrix
+        isSynonym:
+          type: boolean
+          description: |
+            A flag, that is true if the data-source regards matched name as
+            an any kind of synonym to the currently accepted name.
+          example: true
+        classificationPath:
+          type: string
+          description: |
+            A classification path for the matched taxon provided by 
+            the data-source.
+          example: >-
+            Animalia|Chordata|Actinopterygii|Perciformes|Pomatomidae|Pomatomus|Pomatomus
+            saltatrix
+        classificationRanks:
+          type: string
+          description: The ranks of the `classificationPath` entries.
+          example: kingdom|phylum|class|order|family|genus|species
+        editDistance:
+          type: integer
+          description: |
+            Edit distance according to Levenshtein algorithm
+            in case of fuzzy matching. Exact matches would have `editDistance`
+            at 0.
+          example: 1
+        editDistanceStem:
+          type: integer
+          description: |
+            Edit distance according to Levenshtein algorithm between
+            stemmed versions of canonical forms of input name and matched
+            name.
+
+            Stemmed versions are the most normalized forms of
+            scientific names with stripped suffixes and transformation of
+            some characters (v->u, j->i). They are not provided by the API,
+            but can be obtained with `gnparser` app.
+          example: 1
+        matchType:
+          type: string
+          description: |
+            A category that describes the matching type between the input
+            name-string and the matched name from the data-source. The
+            categories are
+            - `NoMatch`
+            - `Exact`
+            - `Fuzzy`
+            - `PartialExact`
+            - `PartialFuzzy`
+            - `FacetedSearch`
+          example: Fuzzy
+        scoreDetails:
+          $ref: '#/components/schemas/ScoreDetails'
+      description: |
+        A successsful match of input name-string to a record in a data-source.
+        ResultData with the highest score appears as a best match.
+        ResultData from selected data-sources are aggregated into
+        `results` array.
+
+        Scoring takes the following into account (sorted from the highest
+        impact to the least)
+        - infraspecific rank (`Aus bus var. cus` vs `Aus bus f. cus`)
+        - fuzzy matching edit distance (less is better)
+        - authorship matching
+        - accepted name vs synonyms (accepted name wins)
+        - parsing quality
+    ScoreDetails:
+      description: |
+        Explains which score properties participated in sorting of the data.
+        Properties located higher provide more weight in the sorting.
+        All properties vary from 0 to 1, where 0 has no influence on sorting,
+        and 1 has the highest priority for sorting.
+      type: object
+      required:
+        - infraSpecificRankScore
+        - fuzzyLessScore
+        - curatedDataScore
+        - authorMatchScore
+        - acceptedNameScore
+        - parsingQualityScore
+      properties:
+        infraSpecificRankScore:
+          description: Is at maximum if infraspecific ranks match.
+          type: number
+          example: 0
+        fuzzyLessScore:
+          description: It is at maximum for exact matches.
+          type: number
+          example: 1
+        curatedDataScore:
+          description: It is at maximum for data-sources marked as `curated`.
+          type: number
+          example: 1
+        authorMatchScore:
+          description: It is at maximum if authors and year matched completely.
+          type: number
+          example: 0.5
+        acceptedNameScore:
+          description: It is at maximum if matched name marked as currently accepted.
+          type: number
+          example: 1
+        parsingQualityScore:
+          description: It is at maximum if no name-parsing problems were detected.
+          type: number
+          example: 1

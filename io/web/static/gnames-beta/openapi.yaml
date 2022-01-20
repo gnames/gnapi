@@ -1,17 +1,17 @@
 openapi: 3.0.0
 info:
-  title: Global Names Verifier API (Beta)
+  title: Global Names Verifier API (Current)
   description: >
     WARNING - GNVerifier (GNames) API did not reach stable version yet, some
-    changes might occur.
+    backward incompatile changes might occur from time to time.
 
 
     This RESTful API matches (reconciles and resolves) putative name-strings
-    with known scientific names.
-    To be able to match spelling variants, it uses 'canonical forms` of names.
-    It is a multistage match, a failure transfers algorithm to the next stage.
-    It tries exact, fuzzy match, partial exact and partial fuzzy matches.
-    
+    with known scientific names. To be able to match spelling variants, it uses
+    'canonical forms` of names. It is a multistage match, a failure transfers
+    algorithm to the next stage. It tries exact, fuzzy match, partial exact and
+    partial fuzzy matches.
+
     API also supports advanced search of species names.
 
     API uses data from more than 100 sources of scientific names (>20 million
@@ -153,7 +153,9 @@ paths:
             example: false
         - name: context
           in: query
-          description: if true, calculates major kingdom and a clade that contains most names.
+          description: >-
+            if true, calculates major kingdom and a clade that contains most
+            names.
           required: false
           style: form
           explode: true
@@ -162,7 +164,9 @@ paths:
             example: false
         - name: context_threshold
           in: query
-          description: takes values from 0.5 to 1, sets the minimal percentage for context calculation.
+          description: >-
+            takes values from 0.5 to 1, sets the minimal percentage for context
+            calculation.
           required: false
           style: form
           explode: true
@@ -195,9 +199,13 @@ paths:
                 $ref: '#/components/schemas/SearchOutput'
   '/search/{query}':
     get:
+<<<<<<< Updated upstream
       description: |
         Search allows to find names by a specific epithet, genus, author, year.
         For the query language description see the `SearchQuery` docs below.
+=======
+      description: 'Search allows to find names by a specific epithet, genus, author, year.'
+>>>>>>> Stashed changes
       parameters:
         - name: query
           in: path
@@ -212,7 +220,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SearchOutput'
-      
 components:
   schemas:
     Version:
@@ -230,19 +237,11 @@ components:
           description: The compilation timestamp.
           example: '2020-11-26_17:39:49UTC'
       description: The version number and build time of the `gnames` app.
-      
-      
-      
-      
     DataSources:
       type: array
       description: A list of biodiversity data-sources aggregated by `gnames`.
       items:
         $ref: '#/components/schemas/DataSource'
-        
-        
-        
-        
     DataSource:
       required:
         - curation
@@ -346,9 +345,6 @@ components:
           description: A timestamp of the last data-source harvest by gnames.
           example: '2020-06-15T00:58:02.000+0000'
       description: Metadata about a biodiversity data-aggregator.
-      
-      
-      
     VerificationInput:
       description: Parameters for verification of name-strings.
       required:
@@ -372,10 +368,11 @@ components:
           items:
             type: integer
             description: >
-              The identifiers of the data-sources that are important for the user.
-              Normally, only the "best result" is returned.
-              If there data-sources selected, their results will be always returned as well (if there is a match).
-              If the value is [0], the results for all matched sources is returned.
+              The identifiers of the data-sources that are important for the
+              user. Normally, only the "best result" is returned. If there
+              data-sources selected, their results will be always returned as
+              well (if there is a match). If the value is [0], the results for
+              all matched sources is returned.
 
 
               Such resuts are sorted by score.
@@ -386,7 +383,8 @@ components:
             If "true", returns all found matches per source, not just the best
             match.
 
-            Results are still sorted by score. It works only for `results` section.
+            Results are still sorted by score. It works only for `results`
+            section.
           example: false
         withCapitalization:
           type: boolean
@@ -397,18 +395,17 @@ components:
         withContext:
           type: boolean
           description: >
-            If true, calculates the most prevalent kingdom and finds the lowest clade that contains the majority of names.
-            Uses Catalogue of life management classification.
+            If true, calculates the most prevalent kingdom and finds the lowest
+            clade that contains the majority of names. Uses Catalogue of life
+            management classification.
           example: true
         contextThreshold:
           type: number
           description: >
-            Sets the minimal percentage of names to calculate the `context`, the lowest clade containing majority of names.
-            Can be set in the range of 0.5-1.0.
+            Sets the minimal percentage of names to calculate the `context`, the
+            lowest clade containing majority of names. Can be set in the range
+            of 0.5-1.0.
           example: 0.6
-
-
-      
     VerificationOutput:
       required:
         - metadata
@@ -424,10 +421,6 @@ components:
           description: An array of verification results.
           items:
             $ref: '#/components/schemas/Name'
-            
-            
-            
-            
     VerificationMetadata:
       required:
         - namesNum
@@ -443,13 +436,16 @@ components:
           example: false
         withAllMatches:
           type: boolean
-          description: If a data-source matched several times, return all matched results.
+          description: 'If a data-source matched several times, return all matched results.'
           example: false
         withContext:
           type: boolean
-          description: |
-            Uses Catalogue of Life classification to calculate the most prominent kingdom.
-            Also calculates the lowest clade that contains the majoriry of input names.
+          description: >
+            Uses Catalogue of Life classification to calculate the most
+            prominent kingdom.
+
+            Also calculates the lowest clade that contains the majoriry of input
+            names.
           example: true
         withCapitalization:
           type: boolean
@@ -468,8 +464,10 @@ components:
             type: integer
         contextThreshold:
           type: number
-          description: |
-            Indicates the lowest percentage of all names that would make a clade show as a `context` of entered names.
+          description: >
+            Indicates the lowest percentage of all names that would make a clade
+            show as a `context` of entered names.
+
             The accepted range is 0.5-1.0, the default is 0.5001.
           example: 0.6
         contextNamesNum:
@@ -480,18 +478,25 @@ components:
           example: 2
         context:
           type: string
-          description: |
-            The name of the lowest clade that still contains the majority of the input names. It is calculated by matching input with Catalogue of Life data and
+          description: >
+            The name of the lowest clade that still contains the majority of the
+            input names. It is calculated by matching input with Catalogue of
+            Life data and
+
             uses its managerial classification.
-            Names that did not match Catalogue of Life are not used for the calculation.
+
+            Names that did not match Catalogue of Life are not used for the
+            calculation.
           example: Chordata
         contextPercentage:
           type: number
           description: The percentage of names in the context clade.
-          example: 1.0
+          example: 1
         kingdom:
           type: string
-          description: The kingdom that contains the majority of names according to Catalogue of Life.
+          description: >-
+            The kingdom that contains the majority of names according to
+            Catalogue of Life.
           example: Animalia
         kingdomPercentage:
           type: number
@@ -501,11 +506,7 @@ components:
           type: array
           description: Distribution of names over matched kingdoms.
           items:
-            $ref: '#/components/schemas/Kingdom' 
-            
-            
-            
-            
+            $ref: '#/components/schemas/Kingdom'
     Kingdom:
       type: object
       required:
@@ -519,16 +520,12 @@ components:
           example: Animalia
         namesNum:
           type: integer
-          description: The number of names, that matched Catalogue of Life for the kingdom.
+          description: 'The number of names, that matched Catalogue of Life for the kingdom.'
           example: 2
         percentage:
           type: number
           description: The percentage of names matched the kingdom.
-          example: 1.0
-          
-          
-          
-          
+          example: 1
     SearchInput:
       type: object
       properties:
@@ -536,7 +533,7 @@ components:
           $ref: '#/components/schemas/SearchQuery'
         withAllResults:
           type: boolean
-          description: Provide all found results, not only `bestResult`
+          description: 'Provide all found results, not only `bestResult`'
           example: false
         warnings:
           type: array
@@ -554,38 +551,48 @@ components:
             description: A data-source ID where to search for a name.
         parentTaxon:
           type: string
-          description: |
-            Limits search data to records containing a particular clade in the classification field.
-            Uses classification of the first data-source given in `dataSourceIds`.
+          description: >
+            Limits search data to records containing a particular clade in the
+            classification field.
+
+            Uses classification of the first data-source given in
+            `dataSourceIds`.
+
             If `dataSourcesIds` is empty, uses Catalogue of Life classification.
           example: Chordata
         nameString:
           type: string
-          description: |
-            A convenience field that allows to enter several fields as a one string.
-            Instead of providing genus, species in separate fields, they can be given in a `nameString`.
+          description: >
+            A convenience field that allows to enter several fields as a one
+            string.
+
+            Instead of providing genus, species in separate fields, they can be
+            given in a `nameString`.
+
             Data from `nameString` sould overwrite corresponding data fields.
-            For example `B. bubo` name string will overwrite `genus` and `species` fields.
+
+            For example `B. bubo` name string will overwrite `genus` and
+            `species` fields.
           example: B. bubo
         genus:
           type: string
-          description: Genus data, can be abbreviated.
+          description: 'Genus data, can be abbreviated.'
           example: Bubo
         species:
           type: string
-          description: Specific epithet, can be abbreviated.
+          description: 'Specific epithet, can be abbreviated.'
           example: bubo
         speciesInfra:
           type: string
-          description: An infraspecific epithet, can be abbreviated.
+          description: 'An infraspecific epithet, can be abbreviated.'
           example: ''
         speciesAny:
           type: string
-          description: Either specific, or infraspecific epithet.
+          description: 'Either specific, or infraspecific epithet.'
           example: ''
         author:
           type: string
-          description: Author's name, can be abbreviated.
+          description: 'Author''s name, can be abbreviated.'
           example: Linn.
         year:
           type: integer
@@ -593,10 +600,14 @@ components:
           example: 0
         yearRange:
           type: object
-          description: |
+          description: >
             Limits search to names within the range.
-            If range does not have one of the values, range is open on that side.
-            At least one value has to be present. If range is given, `year` field is ignored.
+
+            If range does not have one of the values, range is open on that
+            side.
+
+            At least one value has to be present. If range is given, `year`
+            field is ignored.
           properties:
             yearStart:
               type: integer
@@ -606,10 +617,6 @@ components:
               type: integer
               description: The higher border of the range.
               example: 1850
-              
-              
-              
-              
     SearchOutput:
       type: object
       required:
@@ -621,10 +628,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Name'
-            
-            
-            
-            
     SearchMetadata:
       type: object
       required:
@@ -639,32 +642,33 @@ components:
           example: 2
         error:
           type: string
-          description: Provides an error of a search, if it happens.
-          
-          
-          
-          
+          description: 'Provides an error of a search, if it happens.'
     SearchQuery:
       type: string
-      description: |
+      description: >
         Query for advanced search. Query can include the following components.
           
         * genus `g:B.`, `g:Bub.`, `g:Bubo`
+
         * species `sp:bubo`, `sp:gallop.`
+
         * infraspecies `isp:bubo`, `isp:interp.`
+
         * either species or infraspecies (all sp) `asp:bubo`
+
         * data-sources IDs `ds:1,2,3`
-        * parent taxon `tx:Aves`. Uses classification of the first data-source from `d  s:`. If data-sources are not set, uses Catalogue of Life.
+
+        * parent taxon `tx:Aves`. Uses classification of the first data-source
+        from `d  s:`. If data-sources are not set, uses Catalogue of Life.
+
         * author `au:Linnaeus`, `au:Linn.`, `au:L.`
+
         * year `y:1888`, `y:1888-1900`, `y:1888-`, `y:-1888`
+
         * a "name", allows to combine some components together `n:B. bubo`
             
         The query must contain the species or infraspecies data
       example: 'n:B. bubo ds:1,2 au:Linn. y:1700-'
-      
-      
-      
-      
     Name:
       required:
         - curation
@@ -685,7 +689,9 @@ components:
           example: 2284b0d6-d965-5c39-ace5-3ef673da6691
         name:
           type: string
-          description: An input name-string entered for the verification, or found by search.
+          description: >-
+            An input name-string entered for the verification, or found by
+            search.
           example: Pomatomus soltator
         matchType:
           type: string
@@ -731,10 +737,6 @@ components:
             it will be shown here. If error is not empty, it means
             that matching failed because of a bug in the system.
       description: Verification result for a particular input name-string.
-      
-      
-      
-      
     ResultData:
       type: object
       properties:
@@ -907,7 +909,6 @@ components:
         - authorship matching
         - accepted name vs synonyms (accepted name wins)
         - parsing quality
-    
     ScoreDetails:
       description: |
         Explains which score properties participated in sorting of the data.
@@ -924,27 +925,26 @@ components:
         - parsingQualityScore
       properties:
         infraSpecificRankScore:
-          description:  Is at maximum if infraspecific ranks match.
+          description: Is at maximum if infraspecific ranks match.
           type: number
-          example: 0.0
-        fuzzyLessScore: 
-          description: It is at maximum for exact matches. 
+          example: 0
+        fuzzyLessScore:
+          description: It is at maximum for exact matches.
           type: number
-          example: 1.0
-        curatedDataScore: 
+          example: 1
+        curatedDataScore:
           description: It is at maximum for data-sources marked as `curated`.
           type: number
-          example: 1.0
-        authorMatchScore: 
+          example: 1
+        authorMatchScore:
           description: It is at maximum if authors and year matched completely.
           type: number
           example: 0.5
-        acceptedNameScore: 
+        acceptedNameScore:
           description: It is at maximum if matched name marked as currently accepted.
           type: number
-          example: 1.0
-        parsingQualityScore: 
+          example: 1
+        parsingQualityScore:
           description: It is at maximum if no name-parsing problems were detected.
           type: number
-          example: 1.0
-      
+          example: 1
