@@ -1,34 +1,32 @@
 openapi: 3.0.0
 info:
   title: Global Names Verifier API (Current)
-  description: >
-    WARNING - GNVerifier (GNames) API did not reach stable version yet, some
-    backward incompatile changes might occur from time to time.
+  description: |
+    WARNING - GNVerifier (GNames) API did not reach stable version yet, some backward incompatile changes might occur from time to time.
 
 
-    This RESTful API matches (reconciles and resolves) putative name-strings
-    with known scientific names. To be able to match spelling variants, it uses
-    'canonical forms` of names. It is a multistage match, a failure transfers
-    algorithm to the next stage. It tries exact, fuzzy match, partial exact and
-    partial fuzzy matches.
+    This RESTful API matches (reconciles and resolves) putative name-strings with known scientific names.
+    To be able to match spelling variants, it uses `canonical forms` of names.
+    It is a multistage match, a failure transfers algorithm to the next stage.
+    It tries exact, fuzzy match, partial exact and partial fuzzy matches.
+    
+    For viruses it matches known virus names from their beginning.
+    For example `Influenza B virus` would match database names `Influenza B virus` as well as `Influenza B virus (B/Acre/117700/2012)`.
 
-    API also supports advanced search of species names.
+    API also supports advanced search of species names. Advanced search is described at `https://github.com/gnames/gnverifier#advanced-search-query-language`.
 
-    API uses data from more than 100 sources of scientific names (>20 million
-    name-strings).
+    API uses data from more than 100 sources of scientific names (~30 million name-strings).
 
 
     Feature requests and bug reports -`https://github.com/gnames/gnames/issues`
 
 
-    For end-users there is a client to this API - GNverifier, a web-based and
-    command line application.
-
-
-    Web - `https://beta.verifier.globalnames.org`
-
-
-    Command Line - `https://github.com/gnames/gnverifier/releases/latest`
+    For end-users there is a client to this API - GNverifier, a web-based and command line application.
+    
+    - Web `https://verifier.globalnames.org`
+    - Command Line `https://github.com/gnames/gnverifier/releases/latest`
+    
+    GNverifier does not have its own API, it uses remotely this one.
   contact:
     name: Dmitry Mozzherin
     url: 'https://github.com/dimus'
@@ -36,7 +34,7 @@ info:
   license:
     name: MIT
     url: 'https://opensource.org/licenses/MIT'
-  version: 0.3.0
+  version: 0.6.2
 servers:
   - url: 'https://verifier.globalnames.org/api/v0'
     description: Scientific names verification service API (Beta)
@@ -199,13 +197,9 @@ paths:
                 $ref: '#/components/schemas/SearchOutput'
   '/search/{query}':
     get:
-<<<<<<< Updated upstream
       description: |
         Search allows to find names by a specific epithet, genus, author, year.
         For the query language description see the `SearchQuery` docs below.
-=======
-      description: 'Search allows to find names by a specific epithet, genus, author, year.'
->>>>>>> Stashed changes
       parameters:
         - name: query
           in: path
@@ -647,6 +641,8 @@ components:
       type: string
       description: >
         Query for advanced search. Query can include the following components.
+        
+        * name is a shortcut that allows to put together several elements `n:B. bubo Linn. 1750-1800`
           
         * genus `g:B.`, `g:Bub.`, `g:Bubo`
 
@@ -664,8 +660,6 @@ components:
         * author `au:Linnaeus`, `au:Linn.`, `au:L.`
 
         * year `y:1888`, `y:1888-1900`, `y:1888-`, `y:-1888`
-
-        * a "name", allows to combine some components together `n:B. bubo`
             
         The query must contain the species or infraspecies data
       example: 'n:B. bubo ds:1,2 au:Linn. y:1700-'
@@ -730,6 +724,13 @@ components:
             original data-source is not curated, rather it means the curation
             level is not known to `gnames`.
           example: Curated
+        overloadDetected:
+          type: string
+          description: |
+            Sometimes there are too many records in a database corresponding to a name.
+            Usually it happens because of a large amount of surrogate names like `Lepidoptera BOLD:1234` or strains like `Escherichia coli EC1856`.
+            In such cases there is a truncation of results.
+          example: Too many variants (possibly strains), some results are truncated.
         error:
           type: string
           description: |
