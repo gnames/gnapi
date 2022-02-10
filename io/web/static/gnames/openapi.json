@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Global Names Verifier API",
-    "description": "WARNING - GNVerifier (GNames) API did not reach stable version yet, some changes might occur.\n\nThis RESTful API matches (reconciles and resolves) putative name-strings with known scientific names.\nTo be able to match spelling variants, it uses 'canonical forms` of names.\nIt is a multistage match, a failure transfers algorithm to the next stage.\nIt tries exact, fuzzy match, partial exact and partial fuzzy matches.\nAPI uses data from more than 100 sources of scientific names (>20 million name-strings).\n\nFeature requests and bug reports -`https://github.com/gnames/gnames/issues`\n\nFor end-users there is a client to this API - GNverifier, a web-based and command line application.\n\nWeb - `https://verifier.globalnames.org`\n\nCommand Line - `https://github.com/gnames/gnverifier/releases/latest`\n",
+    "title": "Global Names Verifier API/V1",
+    "description": "This is a stable API, however, it is not developed anymore. For currently developed API that has new features use\n`/api/v0` documented at `https://apidoc.globalnames.org/gnames-beta`. \n\nThis RESTful API matches (reconciles and resolves) putative name-strings with known scientific names.\nTo be able to match spelling variants, it uses 'canonical forms` of names.\nIt is a multistage match, a failure transfers algorithm to the next stage.\nIt tries exact, fuzzy match, partial exact and partial fuzzy matches.\nAPI uses data from more than 100 sources of scientific names (>20 million name-strings).\n",
     "contact": {
       "name": "Dmitry Mozzherin",
       "url": "https://github.com/dimus",
