@@ -1,0 +1,196 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Global Names Matcher API",
+    "description": "API for matching strings to scientific names. \nProvided a list of name strings (with or without the authority and year), this API searches millions of names aggregated by Global Names.\nNames are normalized to their `canonical form` (no authors, annotations etc.) and compared to stored canonical forms.\nThe service returns if a match was found to any known scientific names and what kinds of matches were found (e.g. Exact, Fuzzy, Partial etc).\n\nThe API does not provide any information about which [data-sources](https://verifier.globalnames.org/data_sources) contain the names.\nIf you need this information use [gnames-verifier API](https://apidoc.globalnames.org/gnames-beta) instead.\n\nThe source code is located on [GitHub](https://github.com/gnames/gnmatcher).\n",
+    "contact": {
+      "name": "Dmitry Mozzherin",
+      "url": "https://github.com/dimus",
+      "email": "dmozzherin@gmail.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    },
+    "version": "0.9.1"
+  },
+  "servers": [
+    {
+      "url": "https://matcher.globalnames.org/api/v0",
+      "description": "Production server at globalnames.org"
+    }
+  ],
+  "paths": {
+    "/ping": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "A liveliness probe.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "pong"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/version": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Provides the `gnmatcher` version.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Version"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/matches": {
+      "post": {
+        "description": "Match strings against known scientific names.",
+        "requestBody": {
+          "description": "An array of strings to match.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Names"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Input strings and their matches to scientific names.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Matches"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Version": {
+        "required": [
+          "build",
+          "version"
+        ],
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string",
+            "description": "The version number of `gnmatcher`.",
+            "example": "v0.9.1"
+          },
+          "build": {
+            "type": "string",
+            "description": "The compilation timestamp.",
+            "example": "2022-02-24_17:39:49UTC"
+          }
+        },
+        "description": "Version number and build time for `gnmatcher` app."
+      },
+      "Names": {
+        "type": "array",
+        "description": "Strings for verification.",
+        "example": [
+          "Pomatomus soltator",
+          "Bubo bubo (Linnaeus, 1758)",
+          "Isoetes longissimum"
+        ],
+        "items": {
+          "type": "string",
+          "description": "A string to match with known scientific names."
+        }
+      },
+      "Matches": {
+        "type": "array",
+        "description": "The found matches to name-strings.",
+        "items": {
+          "$ref": "#/components/schemas/Match"
+        }
+      },
+      "Match": {
+        "required": [
+          "id",
+          "name",
+          "matchType"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "UUID v5 generated from input name-string.\nIt is always the same for identical name-strings.\n",
+            "example": "2284b0d6-d965-5c39-ace5-3ef673da6691"
+          },
+          "name": {
+            "type": "string",
+            "description": "The input name-string.",
+            "example": "Pomatomus soltator"
+          },
+          "matchType": {
+            "type": "string",
+            "description": "A type of the match. Can be one of\n- `NoMatch`\n- `Partial Fuzzy`\n- `Partial Exact`\n- `Fuzzy`\n- `Exact`\n- `Virus`\n\nNote that `Exact` match is for `canonical form` and doesnot take in account authors.\nThe \"root\" `matchType` corresponds to the best found match.\n",
+            "example": "Fuzzy"
+          },
+          "matchItems": {
+            "type": "array",
+            "description": "Matched canonical forms, virus names.",
+            "items": {
+              "$ref": "#/components/schemas/MatchItem"
+            }
+          }
+        },
+        "description": "Match result for one string."
+      },
+      "MatchItem": {
+        "required": [
+          "id",
+          "matchString",
+          "matchType",
+          "editDistance",
+          "editDistanceStem"
+        ],
+        "type": "object",
+        "description": "Matched `canonical form` or virus name with corresponding metadata.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "UUID v5 generated from the `matchedString`.\nIt is always the same for identical strings.\n",
+            "example": "2cf19440-46c2-52c5-9fce-d66194286102"
+          },
+          "matchedString": {
+            "type": "string",
+            "description": "Matched virus name or the `canonical form` that matched the input's `name`.\nVirus here is used in a very relaxed meaning and includes viruses and other non-cellular entities like prions, plasmids etc.\n",
+            "example": "Pomatomus saltator"
+          },
+          "editDistance": {
+            "type": "integer",
+            "description": "Edit distance between input's `canonical form` and `matchedString` according to Levenshtein algorithm.\n",
+            "example": 1
+          },
+          "editDistanceStem": {
+            "type": "integer",
+            "description": "Edit distance between input's `stemmed canonical form` and stemmed `matchedString` according to Levenshtein algorithm.\nThe `stemmed canonical form has the genus unchanged, but species epithets are stripped from\nsuffixes.\n",
+            "example": 1
+          }
+        }
+      }
+    }
+  }
+}
