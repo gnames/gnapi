@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Global Names Verifier API/V0 (Current)",
-    "description": "WARNING - GNVerifier (GNames) `/api/v0` did not reach stable version yet, some backward incompatile changes might occur from time to time.\nThis is currently developed api, use it if you want the latest features.\nDocumentation to stable `/api/v1` that is not under development anymore is located at `https://apidoc.globalnames.org/gnames`.\n\nThis RESTful API matches (reconciles and resolves) putative name-strings with known scientific names.\nTo be able to match spelling variants, it uses `canonical forms` of names.\nIt is a multistage match, a failure transfers algorithm to the next stage.\nIt tries exact, fuzzy match, partial exact and partial fuzzy matches.\n\nFor viruses it matches known virus names from their beginning.\nFor example `Influenza B virus` would match database names `Influenza B virus` as well as `Influenza B virus (B/Acre/117700/2012)`.\n\nAPI also supports advanced search of species names. Advanced search is described at `https://github.com/gnames/gnverifier#advanced-search-query-language`.\n\nAPI uses data from more than 100 sources of scientific names (~30 million name-strings).\n\n\nFeature requests and bug reports -`https://github.com/gnames/gnames/issues`\n\n\nFor end-users there is a client to this API - GNverifier, a web-based and command line application.\n\n- Web `https://verifier.globalnames.org`\n- Command Line `https://github.com/gnames/gnverifier/releases/latest`\n\nGNverifier does not have its own API, it uses remotely this one.\n",
+    "description": "WARNING - GNVerifier (GNames) `/api/v0` did not reach stable version yet, some backward incompatile changes might occur from time to time.\nThis is currently developed api, use it if you want the latest features.\nDocumentation to stable `/api/v1` that is not under development anymore is located at `https://apidoc.globalnames.org/gnames`.\n\nThis RESTful API matches (reconciles and resolves) putative name-strings with known scientific names.\nTo be able to match spelling variants, it uses `canonical forms` of names (no authors, ranks etc.).\nIt is a multistage match, a failure transfers algorithm to the next stage.\nIt tries exact, fuzzy match, partial exact and partial fuzzy matches.\n\nFor viruses it matches known virus names from their beginning.\nFor example `Influenza B virus` would match database names `Influenza B virus` as well as `Influenza B virus (B/Acre/117700/2012)`.\nThe term `Virus` here is not precise.\nIt points not only to real viruses, but also to prions, phages, plasmids and other non-cellular entities.\n\nAPI also supports advanced search of species names. Advanced search is described at `https://github.com/gnames/gnverifier#advanced-search-query-language`.\n\nAPI uses data from more than 100 sources of scientific names (~30 million name-strings).\n\n\nFeature requests and bug reports -`https://github.com/gnames/gnames/issues`\n\n\nFor end-users there is a client to this API - GNverifier, a web-based and command line application.\n\n- Web `https://verifier.globalnames.org`\n- Command Line `https://github.com/gnames/gnverifier/releases/latest`\n\nGNverifier does not have its own API, it uses remotely this one.\n\nAn asterisk '*' indicates a required field.\n",
     "contact": {
       "name": "Dmitry Mozzherin",
       "url": "https://github.com/dimus",
@@ -105,7 +105,7 @@
       "post": {
         "description": "Verifies an array of strings against known scientific names.",
         "requestBody": {
-          "description": "- An array of strings to verify.\n- An array of selected data-sources to verify against.\n- A flag to return all matches per data-source.\n- A flag to capitalize first letter.\n",
+          "description": "- An array of strings to verify.\n- An array of selected data-sources to verify against.\n- A flag to return all matches instead of default behavior of returning only the `bestResult`.\n- A flag to capitalize first letter.\n",
           "content": {
             "application/json": {
               "schema": {
@@ -142,7 +142,7 @@
             "explode": false,
             "schema": {
               "type": "string",
-              "example": "Pomatomus soltator|Bubo bubo"
+              "example": "Pomatomus soltator|Bubo bubo|Isoetes longissimum"
             }
           },
           {
@@ -160,7 +160,7 @@
           {
             "name": "all_matches",
             "in": "query",
-            "description": "Return all found matches per data-source, not only the best one.\nWorks only with `results`,  `bestResult` is always single.\n",
+            "description": "Return all found matches, not only the best one.\nMultiple results are returned in `results`.\nThese results are sorted by matching quality, the first result is the same as `bestResult`.\n",
             "required": false,
             "explode": true,
             "schema": {
@@ -405,7 +405,8 @@
             "type": "array",
             "example": [
               "Pomatomus soltator",
-              "Bubo bubo (Linnaeus, 1758)"
+              "Bubo bubo (Linnaeus, 1758)",
+              "Isoetes longissimum"
             ],
             "items": {
               "type": "string",
@@ -421,13 +422,13 @@
             ],
             "items": {
               "type": "integer",
-              "description": "The identifiers of the data-sources that are important for the user. Normally, only the \"best result\" is returned. If there data-sources selected, their results will be always returned as well (if there is a match). If the value is [0], the results for all matched sources is returned.\n\nSuch resuts are sorted by score.\n",
+              "description": "The identifiers of the data-sources that are important for the user. If data-sources are given, the verification is limited to them. If data-source's Id is does not exist at `https://verifier.globalnames.org/data_sources` the result will always be empty. All resuts are sorted by `sortScore`.\n",
               "example": 1
             }
           },
           "withAllMatches": {
             "type": "boolean",
-            "description": "If \"true\", returns all found matches per source, not just the best match.\nResults are still sorted by score. It works only for `results` section.\n",
+            "description": "If \"true\", returns all found matches sorted by `sortScore`.",
             "example": false
           },
           "withCapitalization": {
@@ -454,11 +455,7 @@
         "type": "object",
         "properties": {
           "metadata": {
-            "type": "object",
-            "description": "metadata aboout verification.",
-            "items": {
-              "$ref": "#/components/schemas/VerificationMetadata"
-            }
+            "$ref": "#/components/schemas/VerificationMetadata"
           },
           "names": {
             "type": "array",
@@ -596,24 +593,24 @@
           },
           "dataSourceIds": {
             "type": "array",
-            "description": "Limits search data to results from certain data-sources.",
+            "description": "Limits search data to results from the given data-sources.",
             "example": [
               1,
               12
             ],
             "items": {
               "type": "integer",
-              "description": "A data-source ID where to search for a name."
+              "description": "A data-source Id from `https://verifier.globalnames.org/data_sources`."
             }
           },
           "parentTaxon": {
             "type": "string",
-            "description": "Limits search data to records containing a particular clade in the classification field.\nUses classification of the first data-source given in `dataSourceIds`.\nIf `dataSourcesIds` is empty, uses Catalogue of Life classification.\n",
+            "description": "Limits search data to records containing the given clade in the classification field.\n",
             "example": "Chordata"
           },
           "nameString": {
             "type": "string",
-            "description": "A convenience field that allows to enter several fields as a one string.\nInstead of providing genus, species in separate fields, they can be given in a `nameString`.\nData from `nameString` sould overwrite corresponding data fields.\nFor example `B. bubo` name string will overwrite `genus` and `species` fields.\n",
+            "description": "A convenience field that allows to enter several fields as a one string.\nInstead of providing genus, species in separate fields, they can be given in a `nameString`.\nData from `nameString` will overwrite corresponding data fields.\nFor example `B. bubo` name string will overwrite `genus` and `species` fields.\n",
             "example": "B. bubo"
           },
           "genus": {
@@ -729,9 +726,7 @@
             "example": "Pomatomus soltator"
           },
           "matchType": {
-            "type": "string",
-            "description": "Indicates the quality of verification.\n- `NoMatch` (no matched name found)\n- `Exact` (exact match to a canonical form or a verbatim string)\n- `Fuzzy` (fuzzy match to a canonical form)\n- `PartialExact` (match after removing last or middle epithets)\n- `PartialFuzzy` (fuzzy partial match after removing some parts)\n- `FacetedSearch` (match by a faceted search)\n",
-            "example": "Fuzzy"
+            "$ref": "#/components/schemas/MatchType"
           },
           "bestResult": {
             "$ref": "#/components/schemas/ResultData"
@@ -766,11 +761,29 @@
         "description": "Verification result for a particular input name-string."
       },
       "ResultData": {
+        "required": [
+          "dataSourceID",
+          "dataSourceTitleShort",
+          "curation",
+          "recordId",
+          "entryDate",
+          "sortScore",
+          "matchedName",
+          "matchedCardinality",
+          "currentRecordId",
+          "currentName",
+          "isSynonym",
+          "editDistance",
+          "stemEditDistance",
+          "matchType",
+          "scoreDetails"
+        ],
         "type": "object",
+        "description": "A successsful match of input name-string to a record in a data-source.\nResultData with the highest score appears as a best match.\nResultData from selected data-sources are aggregated into `results` array.\nThe total score is represented by `sortScore` field and is calculated by an internal algorithm.\n\nScoring takes the following into account (sorted from the highest impact to the least)\n- infraspecific rank (`Aus bus var. cus` vs `Aus bus f. cus`)\n- fuzzy matching edit distance (less is better)\n- authorship matching\n- accepted name vs synonyms (accepted name wins)\n- parsing quality\n",
         "properties": {
           "dataSourceId": {
             "type": "integer",
-            "description": "An ID of the data-source where the match was found. This is a\nlocal ID at GlobalNames and it has been stable for more than\n10 years.\n",
+            "description": "An Id of the data-source where the match was found. This is a\nlocal Id at GlobalNames and it has been stable for more than\n10 years.\n",
             "example": 1
           },
           "dataSourceTitleShort": {
@@ -808,6 +821,10 @@
             "description": "A date when a record was harvested to gnames. It follows a\npattern 'YYYY-MM-DD'.\n",
             "example": "2020-06-30T00:00:00.000Z"
           },
+          "sortScore": {
+            "type": "number",
+            "description": "SortScore is a numeric representation of the total score.\nIt can be used to find the BestMatch overall, as well as the best match for every data-source.\n\nSortScore takes data from all other scores, using the priority sequence from highest to lowest.\n- InfraSpecificRankScore\n- FuzzyLessScore\n- CuratedDataScore\n- AuthorMatchScore\n- AcceptedNameScor\n- ParsingQualityScore\n\nHigher priorities trump lower priorities.\nWhen the final score value is calculated, it is used to sort verification or search results.\n \nComparing this score between results of different verifications will not necessary be accurate.\nThe score is used for comparison of names from the same result.\n"
+          },
           "matchedName": {
             "type": "string",
             "description": "A verbatim scientfic name matched to the input.",
@@ -815,27 +832,27 @@
           },
           "matchedCardinality": {
             "type": "integer",
-            "description": "A cardinality value of the matched name. Binomial names\nhave cardinality 2, uninomials have cardinalty 1 etc.\nCardinality 0 means we cannot determine cardinality of a string.\n",
+            "description": "A cardinality value of the matched name. \nBinomial names have cardinality 2, uninomials have cardinalty 1 etc.\nCardinality 0 means we cannot determine cardinality of a string.\n",
             "example": 2
           },
           "matchedCanonicalSimple": {
             "type": "string",
-            "description": "The most normalized canonical form of a scientific name. It\ndoes not contain infraspecific ranks, hybrid signs for named\nhybrids, authors or years. This canonical form is the best for\nmatching names.\n",
+            "description": "The most normalized canonical form of a scientific name.\nIt does not contain infraspecific ranks, hybrid signs for named hybrids, authors or years. \nThis canonical form is the best for matching names.\n",
             "example": "Pomatomus saltator"
           },
           "matchedCanonicalFull": {
             "type": "string",
-            "description": "A less normalized canonical form of the matched name \nwith more details. This canonical form is better for\npresentation and creating matching scores.\n",
+            "description": "A less normalized canonical form of the matched name with more details.\nThis canonical form is better for presentation and creating matching scores.\n",
             "example": "Pomatomus saltator"
           },
           "currentRecordId": {
             "type": "string",
-            "description": "If the data-source allows taxonomic resolution of a name,\n`currentRecordId` will contain the data-source record ID of\nthe currently accepted name for the matched taxon. \n",
+            "description": "If the data-source allows taxonomic resolution of a name, `currentRecordId` will contain the data-source record ID of the currently accepted name for the matched taxon. \n",
             "example": "TX543"
           },
           "currentName": {
             "type": "string",
-            "description": "The currently accepted name for the taxon according to the\ndata-source.\n",
+            "description": "The currently accepted name for the taxon according to the data-source.\n",
             "example": "Pomatomus saltatrix (Linnaeus, 1766)"
           },
           "currentCardinality": {
@@ -845,22 +862,22 @@
           },
           "currentCanonicalSimple": {
             "type": "string",
-            "description": "The most normalized canonical form of the currently\naccepted scientific name.\n",
+            "description": "The most normalized canonical form of the currently accepted scientific name.\n",
             "example": "Pomatomus saltatrix"
           },
           "currentCanonicalFull": {
             "type": "string",
-            "description": "A less normalized canonical form of the currently accepted\nscientific name.\n",
+            "description": "A less normalized canonical form of the currently accepted scientific name.\n",
             "example": "Pomatomus saltatrix"
           },
           "isSynonym": {
             "type": "boolean",
-            "description": "A flag, that is true if the data-source regards matched name as\nan any kind of synonym to the currently accepted name.\n",
+            "description": "A flag, that is true if the data-source regards matched name as an any kind of synonym to the currently accepted name.\n",
             "example": true
           },
           "classificationPath": {
             "type": "string",
-            "description": "A classification path for the matched taxon provided by \nthe data-source.\n",
+            "description": "A classification path for the matched taxon provided by the data-source.\n",
             "example": "Animalia|Chordata|Actinopterygii|Perciformes|Pomatomidae|Pomatomus|Pomatomus saltatrix"
           },
           "classificationRanks": {
@@ -870,24 +887,26 @@
           },
           "editDistance": {
             "type": "integer",
-            "description": "Edit distance according to Levenshtein algorithm\nin case of fuzzy matching. Exact matches would have `editDistance`\nat 0.\n",
+            "description": "Edit distance according to Levenshtein algorithm in case of fuzzy matching. Exact matches would have `editDistance` at 0.\n",
             "example": 1
           },
           "editDistanceStem": {
             "type": "integer",
-            "description": "Edit distance according to Levenshtein algorithm between\nstemmed versions of canonical forms of input name and matched\nname.\n\nStemmed versions are the most normalized forms of\nscientific names with stripped suffixes and transformation of\nsome characters (v->u, j->i). They are not provided by the API,\nbut can be obtained with `gnparser` app.\n",
+            "description": "Edit distance according to Levenshtein algorithm between stemmed versions of canonical forms of input name and matched name.\n\nStemmed versions are the most normalized forms of scientific names with stripped suffixes and transformation of some characters (v->u, j->i).\nThey are not provided by the API, but can be obtained with `gnparser` app.\n",
             "example": 1
           },
           "matchType": {
-            "type": "string",
-            "description": "A category that describes the matching type between the input\nname-string and the matched name from the data-source. The\ncategories are\n- `NoMatch`\n- `Exact`\n- `Fuzzy`\n- `PartialExact`\n- `PartialFuzzy`\n- `FacetedSearch`\n",
-            "example": "Fuzzy"
+            "$ref": "#/components/schemas/MatchType"
           },
           "scoreDetails": {
             "$ref": "#/components/schemas/ScoreDetails"
           }
-        },
-        "description": "A successsful match of input name-string to a record in a data-source.\nResultData with the highest score appears as a best match.\nResultData from selected data-sources are aggregated into\n`results` array.\n\nScoring takes the following into account (sorted from the highest\nimpact to the least)\n- infraspecific rank (`Aus bus var. cus` vs `Aus bus f. cus`)\n- fuzzy matching edit distance (less is better)\n- authorship matching\n- accepted name vs synonyms (accepted name wins)\n- parsing quality\n"
+        }
+      },
+      "MatchType": {
+        "description": "Indicates the quality and/or kind of found matches.\n- `NoMatch` (no matched name found)\n- `PartialFuzzy` (fuzzy partial match after removing some parts)\n- `PartialExact` (match after removing last or middle epithets)\n- `Fuzzy` (fuzzy match to a canonical form)\n- `Exact` (exact match to a canonical form or a verbatim string)\n- `Virus` (literal match of Viruses, plasmids, prions and other non-cellular entities)\n- `FacetedSearch` (match by a faceted search)\n",
+        "type": "string",
+        "example": "Fuzzy"
       },
       "ScoreDetails": {
         "description": "Explains which score properties participated in sorting of the data.\nProperties located higher provide more weight in the sorting.\nAll properties vary from 0 to 1, where 0 has no influence on sorting,\nand 1 has the highest priority for sorting.\n",
