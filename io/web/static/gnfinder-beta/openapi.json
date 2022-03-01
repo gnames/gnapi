@@ -188,6 +188,11 @@
               "description": "The identifiers of the data-sources that are important for the user.\nNormally, only the \"best result\" is returned.\nIf there are preferred data-sources, their results will be always returned as well (if there is a match).\n",
               "example": 1
             }
+          },
+          "withAllMatches": {
+            "type": "boolean",
+            "description": "When this option is true all found results are returned.\nThe `bestResult` field in this case is null, and `results` field should contain found resulsts of the matches.\n",
+            "example": false
           }
         }
       },
@@ -507,7 +512,7 @@
           },
           "results": {
             "type": "array",
-            "description": "Matched records found in selected data-sources.",
+            "description": "All found matched records returned if `withAllMatches` option is given.\nThe `bestResult` and `results` fields are mutually exclusive.\n",
             "items": {
               "$ref": "#/components/schemas/ResultData"
             }

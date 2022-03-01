@@ -23,9 +23,13 @@ info:
     name: MIT
     url: 'https://opensource.org/licenses/MIT'
   version: 0.18.0
+  
+  
 servers:
   - url: 'https://gnfinder.globalnames.org/api/v0'
     description: Production GNfinder service
+
+
 paths:
   /ping:
     get:
@@ -37,6 +41,8 @@ paths:
               schema:
                 type: string
                 example: pong
+  
+  
   /version:
     get:
       responses:
@@ -46,6 +52,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Version'
+  
+  
   /find:
     post:
       description: Detects scientific names in supplied text or URL.
@@ -73,6 +81,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FinderResult'
+
+
+
+
 components:
   schemas:
     Version:
@@ -90,6 +102,8 @@ components:
           description: The compilation timestamp.
           example: '2020-11-26_17:39:49UTC'
       description: The version number and build time of the `gnames` app.
+    
+    
     FinderParams:
       type: object
       properties:
@@ -197,6 +211,14 @@ components:
               Normally, only the "best result" is returned.
               If there are preferred data-sources, their results will be always returned as well (if there is a match).
             example: 1
+        withAllMatches:
+          type: boolean
+          description: |
+            When this option is true all found results are returned.
+            The `bestResult` field in this case is null, and `results` field should contain found resulsts of the matches.
+          example: false
+    
+    
     FinderResult:
       required:
         - metadata
@@ -207,6 +229,8 @@ components:
           $ref: '#/components/schemas/Metadata'
         names:
           $ref: '#/components/schemas/Names'
+    
+    
     Metadata:
       required:
         - nameFindingSec
@@ -338,6 +362,8 @@ components:
           type: number
           example: 0.67
           description: the percentage of names in `mainClade` to the total number of all verified to Catalogue of Life names.
+    
+    
     Kingdom:
       type: object
       required:
@@ -359,12 +385,16 @@ components:
           example: 0.65
           description: |
             `namesNumber` for the `kingdom` divided by the sum of `namesNumbers` for all `kingdoms`.
+    
+    
     Names:
       type: array
       description: |
         Provides information about names detected by GNfinder.
       items:
         $ref: '#/components/schemas/Name'
+    
+    
     Name:
       required:
         - cardinality
@@ -474,6 +504,8 @@ components:
             - d
         verification:
           $ref: '#/components/schemas/Verification'
+    
+    
     Verification:
       required:
         - curation
@@ -513,7 +545,9 @@ components:
           $ref: '#/components/schemas/ResultData'
         results:
           type: array
-          description: Matched records found in selected data-sources.
+          description: |
+            All found matched records returned if `withAllMatches` option is given.
+            The `bestResult` and `results` fields are mutually exclusive.
           items:
             $ref: '#/components/schemas/ResultData'
         dataSourcesNum:
@@ -542,6 +576,8 @@ components:
             it will be shown here. If error is not empty, it means
             that matching failed because of a bug in the system.
       description: Verification result for a particular input name-string.
+    
+    
     ResultData:
       type: object
       properties:
@@ -714,6 +750,8 @@ components:
         - authorship matching
         - accepted name vs synonyms (accepted name wins)
         - parsing quality
+    
+    
     ScoreDetails:
       description: |
         Explains which score properties participated in sorting of the data.
