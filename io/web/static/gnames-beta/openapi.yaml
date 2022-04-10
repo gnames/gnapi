@@ -39,7 +39,7 @@ info:
   license:
     name: MIT
     url: 'https://opensource.org/licenses/MIT'
-  version: 0.6.2
+  version: 0.13.0
   
   
   
@@ -415,19 +415,20 @@ components:
             If this flag is "true", name-strings that start with low-case
             letter will be capitalized.
           example: false
-        withContext:
+        withStats:
           type: boolean
           description: >
             If true, calculates the most prevalent kingdom and finds the lowest
-            clade that contains the majority of names. Uses Catalogue of life
+            taxon that contains the majority of names. Uses the Catalogue of life
             management classification.
           example: true
-        contextThreshold:
+        mainTaxonThreshold:
           type: number
           description: >
-            Sets the minimal percentage of names to calculate the `context`, the
-            lowest clade containing majority of names. Can be set in the range
+            Sets the minimal percentage of names to calculate the `mainTaxon`, the
+            lowest taxon containing majority of names. Can be set in the range
             of 0.5-1.0.
+            If not set, or is lower than 0.5, the value defaults to 0.5.
           example: 0.6
           
           
@@ -447,28 +448,28 @@ components:
             
     VerificationMetadata:
       required:
-        - namesNum
+        - namesNumber
       type: object
       properties:
-        namesNum:
+        namesNumber:
           type: integer
           description: The number of names in the input.
           example: 2
         withAllSources:
           type: boolean
-          description: Returns data from all sources where there was a match.
+          description: When `true`, all the data from all sources are used for matching.
           example: false
         withAllMatches:
           type: boolean
-          description: 'If a data-source matched several times, return all matched results.'
+          description: If a data-source matched several times, returns all matched results.
           example: false
-        withContext:
+        withStats:
           type: boolean
           description: >
-            Uses Catalogue of Life classification to calculate the most
+            Uses the Catalogue of Life's classification to calculate the most
             prominent kingdom.
 
-            Also calculates the lowest clade that contains the majoriry of input
+            Also calculates the lowest taxon that contains the majoriry of input
             names.
           example: true
         withCapitalization:
@@ -486,25 +487,25 @@ components:
             - 169
           items:
             type: integer
-        contextThreshold:
+        mainTaxonThreshold:
           type: number
           description: >
-            Indicates the lowest percentage of all names that would make a clade
-            show as a `context` of entered names.
+            Indicates the lowest percentage of all names that would make a taxon
+            show as a `mainTaxon` of entered names.
 
-            The accepted range is 0.5-1.0, the default is 0.5001.
+            The accepted range is 0.5-1.0, the default is 0.5.
           example: 0.6
-        contextNamesNum:
+        StatsNamesNum:
           type: integer
           description: |
             The number of names used for calculation of the context.
-            Only names that can match to names in Catalogue of Life are used.
+            Only names that can match to names in the Catalogue of Life are used.
           example: 2
-        context:
+        mainTaxon:
           type: string
           description: >
-            The name of the lowest clade that still contains the majority of the
-            input names. It is calculated by matching input with Catalogue of
+            The name of the lowest taxon that still contains the majority of the
+            input names. It is calculated by matching input with the Catalogue of
             Life data and
 
             uses its managerial classification.
@@ -512,9 +513,9 @@ components:
             Names that did not match Catalogue of Life are not used for the
             calculation.
           example: Chordata
-        contextPercentage:
+        mainTaxonPercentage:
           type: number
-          description: The percentage of names in the context clade.
+          description: The percentage of names in the mainTaxon.
           example: 1
         kingdom:
           type: string
