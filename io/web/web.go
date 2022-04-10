@@ -37,6 +37,7 @@ func Run(domain string, port int) {
 	e.GET("/gnames", gnames(domain))
 	e.GET("/gnames-beta", gnamesBeta(domain))
 	e.GET("/gnmatcher", gnmatcher(domain))
+	e.GET("/gnmatcher-beta", gnmatcherBeta(domain))
 	e.GET("/gnfinder", gnfinder(domain))
 	e.GET("/gnfinder-beta", gnfinderBeta(domain))
 
@@ -87,6 +88,13 @@ func gnparser(domain string) func(echo.Context) error {
 func gnmatcher(domain string) func(echo.Context) error {
 	return func(c echo.Context) error {
 		data := Data{Domain: domain, DocJSON: "static/gnmatcher/openapi.json"}
+		return c.Render(http.StatusOK, "api", data)
+	}
+}
+
+func gnmatcherBeta(domain string) func(echo.Context) error {
+	return func(c echo.Context) error {
+		data := Data{Domain: domain, DocJSON: "static/gnmatcher-beta/openapi.json"}
 		return c.Render(http.StatusOK, "api", data)
 	}
 }
