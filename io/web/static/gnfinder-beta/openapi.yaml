@@ -22,7 +22,7 @@ info:
   license:
     name: MIT
     url: 'https://opensource.org/licenses/MIT'
-  version: 0.18.0
+  version: 0.19.3
   
   
 servers:
@@ -233,18 +233,11 @@ components:
     
     Metadata:
       required:
-        - nameFindingSec
-        - totalSec
         - date
         - gnfinderVersion
-        - withBayes
-        - withPositionInBytes
-        - withOddsAdjustment
-        - withVerification
+        - nameFindingSec
+        - totalSec
         - wordsAround
-        - language
-        - languageDetected
-        - withLanguageDetection
         - totalWords
         - totalNameCandidates
         - totalNames
@@ -282,6 +275,33 @@ components:
           type: number
           example: 0.683
           description: Total time spent on all required subprocessess.
+        wordsAround:
+          type: integer
+          example: 0
+          description: |
+            Indicates the number of words before and after detected name that will be provided in the results.
+            By default it would be 0.
+        language:
+          type: string
+          description: |
+            Indicates the language that was used for calculation of Bayes' odds.
+          example: eng
+        languageDetected:
+          type: string
+          description: |
+            Provides the value of automatically detected language.
+          example: deu
+        withAllMatches:
+          type: boolean
+          description: It is true if all verification results are shown.
+        withAmbiguousNames:
+          type: boolean
+          description: |
+            It is true if ambiguous uninomials are preserved in the results.
+            Examples of ambiguous uninomials are `Cancer`, `America`.
+        withUniqueNames:
+          type: boolean
+          description: It is true when unique names are returned instead of every occurrence of a name.
         withBayes:
           type: boolean
           example: true
@@ -308,22 +328,6 @@ components:
           description: |
             If true, there is an additional verification step that uses a remote `https://gnames.globalnames.org/api/v1` service to check if found names do exist in a variety of biodiversity databases.
             By default it would be `false`.
-        wordsAround:
-          type: integer
-          example: 0
-          description: |
-            Indicates the number of words before and after detected name that will be provided in the results.
-            By default it would be 0.
-        language:
-          type: string
-          description: |
-            Indicates the language that was used for calculation of Bayes' odds.
-          example: eng
-        languageDetected:
-          type: string
-          description: |
-            Provides the value of automatically detected language.
-          example: deu
         withLanguageDetection:
           type: boolean
           description: |
@@ -333,7 +337,7 @@ components:
           example: 20
           description: |
             Indicates the number of words in the document detected by a tokenizer function.
-        totalCandidates:
+        totalNameCandidates:
           type: integer
           example: 5
           description: |
@@ -348,20 +352,25 @@ components:
           description: Distribution of names verified to the Catalogue of Life between kingdoms.
           items:
             $ref: '#/components/schemas/Kingdom'
-        mainClade:
+        mainTaxon:
           type: string
           example: Araneae
           description: |
-            The lowest clade that contains the majority of detected names.
+            The lowest taxon that contains the majority of detected names.
             We use a subset of detected names that did get verified to a Catalogue of Life taxa.
-        mainCladeRank:
+        mainTaxonRank:
           type: string
           example: order
-          description: the rank of the `mainClade`
+          description: The rank of the `mainTaxon`
         mainCladePercentage:
           type: number
           example: 0.67
-          description: the percentage of names in `mainClade` to the total number of all verified to Catalogue of Life names.
+          description: The percentage of names in `mainTaxon` to the total number of all verified to Catalogue of Life names.
+        statsNamesNum:
+          type: integer
+          description: |
+            Is the number of names used for calculating statistics.
+            It includes names that are genus and lower and are verified to the Catalogue of Life.
     
     
     Kingdom:
