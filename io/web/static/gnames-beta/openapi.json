@@ -2,17 +2,17 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Global Names Verifier API/V0 (Current)",
-    "description": "WARNING - GNVerifier (GNames) `/api/v0` did not reach stable version yet, some backward incompatile changes might occur from time to time.\nThis is currently developed api, use it if you want the latest features.\nDocumentation to stable `/api/v1` that is not under development anymore is located at `https://apidoc.globalnames.org/gnames`.\n\nThis RESTful API matches (reconciles and resolves) putative name-strings with known scientific names.\nTo be able to match spelling variants, it uses `canonical forms` of names (no authors, ranks etc.).\nIt is a multistage match, a failure transfers algorithm to the next stage.\nIt tries exact, fuzzy match, partial exact and partial fuzzy matches.\n\nFor viruses it matches known virus names from their beginning.\nFor example `Influenza B virus` would match database names `Influenza B virus` as well as `Influenza B virus (B/Acre/117700/2012)`.\nThe term `Virus` here is not precise.\nIt points not only to real viruses, but also to prions, phages, plasmids and other non-cellular entities.\n\nAPI also supports advanced search of species names. Advanced search is described at `https://github.com/gnames/gnverifier#advanced-search-query-language`.\n\nAPI uses data from more than 100 sources of scientific names (~30 million name-strings).\n\n\nFeature requests and bug reports -`https://github.com/gnames/gnames/issues`\n\n\nFor end-users there is a client to this API - GNverifier, a web-based and command line application.\n\n- Web `https://verifier.globalnames.org`\n- Command Line `https://github.com/gnames/gnverifier/releases/latest`\n\nGNverifier does not have its own API, it uses remotely this one.\n\nAn asterisk '*' indicates a required field.\n",
+    "description": "GNVerifier (GNames) `/api/v0` is going to be stabilized soon to become `/api/v2`.\n\nDocumentation to stable `/api/v1` that is not under development anymore is located at `https://apidoc.globalnames.org/gnames`.\n\nThis RESTful API matches (reconciles and resolves) putative name-strings to known scientific names.\nIt is a multistage match, a failure transfers algorithm to the next stage.\nIt tries exact, fuzzy match, partial exact and partial fuzzy matches.\n\nTo be able to match spelling variants, it uses `stemmed canonical forms` of names (no authors, ranks, species epithet suffixes, etc.).\nFor example a stemmed canonical of `Monochamus galloprovincialis (Oliver, 1795)` is `Monochamus galloprouincial`.\nStemmed version removed suffix `is` and substituted `v` to `u`. Received matches are then sorted using several quality criteria to reveal \"the best\" match.\n\nFor viruses it matches known virus names from their beginning.\nFor example `Influenza B virus` would match database names `Influenza B virus` as well as `Influenza B virus (B/Acre/117700/2012)`.\nThe term `Virus` here is not precise.\nIt points not only to real viruses, but also to prions, phages, plasmids and other non-cellular entities.\n\nAPI also supports advanced search of species names. Advanced search is described at `https://github.com/gnames/gnverifier#advanced-search-query-language`.\n\nAPI uses data from more than 100 sources of scientific names (~30 million name-strings).\n\n\nFeature requests and bug reports -`https://github.com/gnames/gnames/issues`\n\n\nFor end-users there is a client to this API - GNverifier, a web-based and command line application.\n\n- Web `https://verifier.globalnames.org`\n- Command Line `https://github.com/gnames/gnverifier/releases/latest`\n\nGNverifier does not have its own API, it uses remotely this one.\n\nAn asterisk '*' indicates a required field.\n",
     "contact": {
       "name": "Dmitry Mozzherin",
       "url": "https://github.com/dimus",
       "email": "dmozzherin@gmail.com"
     },
     "license": {
-      "name": "MIT",
+      "name": "License MIT",
       "url": "https://opensource.org/licenses/MIT"
     },
-    "version": "0.13.0"
+    "version": "1.0.0-RC1"
   },
   "servers": [
     {
@@ -25,7 +25,7 @@
       "get": {
         "responses": {
           "200": {
-            "description": "Use this endpoint to see if service is running.",
+            "description": "Use this endpoint to see if the service is running.",
             "content": {
               "text/plain": {
                 "schema": {
@@ -42,7 +42,7 @@
       "get": {
         "responses": {
           "200": {
-            "description": "The version of the gnames app.",
+            "description": "The version of the `gnames` app.",
             "content": {
               "application/json": {
                 "schema": {
@@ -181,9 +181,9 @@
             }
           },
           {
-            "name": "context",
+            "name": "species_group",
             "in": "query",
-            "description": "if true, calculates major kingdom and a clade that contains most names.",
+            "description": "Expands the search to species group where applicable.",
             "required": false,
             "style": "form",
             "explode": true,
@@ -193,9 +193,21 @@
             }
           },
           {
-            "name": "context_threshold",
+            "name": "stats",
             "in": "query",
-            "description": "takes values from 0.5 to 1, sets the minimal percentage for context calculation.",
+            "description": "Finds out a kingdom and a taxon (`main taxon`) that contain most names. It only takes in account the names matched to the Catalogue of Life entries. This opion is ignored, if Catalogue of Life is not included in data-sources.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "boolean",
+              "example": false
+            }
+          },
+          {
+            "name": "main_taxon_threshold",
+            "in": "query",
+            "description": "Takes values from 0.5 to 1, sets the minimal percentage for the `main taxon` discovery.",
             "required": false,
             "style": "form",
             "explode": true,
@@ -288,12 +300,12 @@
           "version": {
             "type": "string",
             "description": "The version number.",
-            "example": "v0.5.2"
+            "example": "v1.0.0-RC1"
           },
           "build": {
             "type": "string",
             "description": "The compilation timestamp.",
-            "example": "2020-11-26_17:39:49UTC"
+            "example": "2022-05-05_13:55:47UTC"
           }
         },
         "description": "The version number and build time of the `gnames` app."
@@ -418,7 +430,7 @@
             "example": [
               1,
               12,
-              169
+              170
             ],
             "items": {
               "type": "integer",
@@ -434,6 +446,11 @@
           "withCapitalization": {
             "type": "boolean",
             "description": "If this flag is \"true\", name-strings that start with low-case\nletter will be capitalized.\n",
+            "example": false
+          },
+          "withSpeciesGroup": {
+            "type": "boolean",
+            "description": "If this flag is \"true\", species names also get matched by their species group.\nIt means that the request will take in account botanical autonyms and zoological coordinated names.\nFor example, a search for `Aus bus` will also search for `Aus bus bus` and vice versa.\n",
             "example": false
           },
           "withStats": {
@@ -497,13 +514,18 @@
             "description": "Capitalizes the first letter of input.",
             "example": false
           },
+          "withSpeciesGroup": {
+            "type": "boolean",
+            "description": "Expand search to species group.",
+            "example": false
+          },
           "dataSources": {
             "type": "array",
             "description": "The list of selected data-sources. \nThis setting is ignored if `withAllSources` is true.\n",
             "example": [
               1,
               12,
-              169
+              170
             ],
             "items": {
               "type": "integer"
@@ -912,6 +934,7 @@
         "description": "Explains which score properties participated in sorting of the data.\nProperties located higher provide more weight in the sorting.\nAll properties vary from 0 to 1, where 0 has no influence on sorting,\nand 1 has the highest priority for sorting.\n",
         "type": "object",
         "required": [
+          "cardinalityScore",
           "infraSpecificRankScore",
           "fuzzyLessScore",
           "curatedDataScore",
@@ -920,6 +943,11 @@
           "parsingQualityScore"
         ],
         "properties": {
+          "cardinalityScore": {
+            "description": "Is 1 if cardinality matches (for example if both the intput and a match are `trinomials`), is 0 otherwise.",
+            "type": "number",
+            "example": 1
+          },
           "infraSpecificRankScore": {
             "description": "Is at maximum if infraspecific ranks match.",
             "type": "number",
