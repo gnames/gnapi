@@ -12,7 +12,7 @@
       "name": "MIT",
       "url": "https://opensource.org/licenses/MIT"
     },
-    "version": "0.9.9"
+    "version": "1.0.0-RC1"
   },
   "servers": [
     {
@@ -68,6 +68,61 @@
           },
           "required": true
         },
+        "responses": {
+          "200": {
+            "description": "Input strings and their matches to scientific names.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Output"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/matches/{names}": {
+      "get": {
+        "description": "Match name-strings separated by '|' character against known scientific names.",
+        "parameters": [
+          {
+            "name": "names",
+            "in": "path",
+            "description": "Strings to verify (separated by '|' character).",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "example": "Pomatomus soltator|Bubo bubo|Isoetes longissimum"
+            }
+          },
+          {
+            "name": "data_sources",
+            "in": "query",
+            "description": "Array of selected data-sources IDs separated by '|'.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "example": "1|12"
+            }
+          },
+          {
+            "name": "species_group",
+            "in": "query",
+            "description": "Expands the search to species group where applicable.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "boolean",
+              "example": false
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Input strings and their matches to scientific names.",
@@ -259,7 +314,7 @@
           },
           "dataSources": {
             "type": "array",
-            "description": "Ids of data-sources that contain the `matchedItem`",
+            "description": "Ids of data-sources that contain the `matchedItem`.\nNote that if Input does contain data-sources, only a subset of these data-sources will be provided.\n",
             "example": [
               1,
               12

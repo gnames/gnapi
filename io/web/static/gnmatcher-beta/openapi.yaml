@@ -1,276 +1,364 @@
-{
-  "openapi": "3.0.0",
-  "info": {
-    "title": "Global Names Matcher API",
-    "description": "This is an API for matching name-strings to known scientific names. \n\nThe API takes an Input object containing a list of name-strings and several optional parameters. The name-strings are then matched to millions of names aggregated from hundreds of data-sources.\n\nName-strings are normalized to their `canonical forms` (no authors, annotations etc.) and compared to stored canonical forms. This approach allows to prevent false negatives, when an alternative spelling of a name, its authors, or a year does not allow to match name-strings correctly.\nThe service reports whether a match was found to any known scientific names, and what kinds of matches were found (e.g. Exact, Fuzzy, Partial etc).\n\nThe API also provides information which [data-sources](https://verifier.globalnames.org/data_sources) contain the names, but does not give details about exact name-strings stored in the data-sources. If you need such additional details use [gnames-verifier API](https://apidoc.globalnames.org/gnames-beta) instead.\n\nThe source code is located on [GitHub](https://github.com/gnames/gnmatcher).\n",
-    "contact": {
-      "name": "Dmitry Mozzherin",
-      "url": "https://github.com/dimus",
-      "email": "dmozzherin@gmail.com"
-    },
-    "license": {
-      "name": "MIT",
-      "url": "https://opensource.org/licenses/MIT"
-    },
-    "version": "0.9.9"
-  },
-  "servers": [
-    {
-      "url": "https://matcher.globalnames.org/api/v0",
-      "description": "Production server at globalnames.org"
-    }
-  ],
-  "paths": {
-    "/ping": {
-      "get": {
-        "responses": {
-          "200": {
-            "description": "A liveliness probe. Use it to ensure that the service is running.",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string",
-                  "example": "pong"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/version": {
-      "get": {
-        "responses": {
-          "200": {
-            "description": "Returns the version of `gnmatcher`.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Version"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/matches": {
-      "post": {
-        "description": "Match name-strings against known scientific names.",
-        "requestBody": {
-          "description": "Input object with an array name-strings and options.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Input"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Input strings and their matches to scientific names.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Output"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "Version": {
-        "required": [
-          "build",
-          "version"
-        ],
-        "type": "object",
-        "properties": {
-          "version": {
-            "type": "string",
-            "description": "The version number of `gnmatcher`.",
-            "example": "v0.9.9"
-          },
-          "build": {
-            "type": "string",
-            "description": "The compilation timestamp.",
-            "example": "2022-05-24_17:39:49UTC"
+openapi: 3.0.0
+info:
+  title: Global Names Matcher API
+  description: >
+    This is an API for matching name-strings to known scientific names. 
+
+
+    The API takes an Input object containing a list of name-strings and several
+    optional parameters. The name-strings are then matched to millions of names
+    aggregated from hundreds of data-sources.
+
+
+    Name-strings are normalized to their `canonical forms` (no authors,
+    annotations etc.) and compared to stored canonical forms. This approach
+    allows to prevent false negatives, when an alternative spelling of a name,
+    its authors, or a year does not allow to match name-strings correctly.
+
+    The service reports whether a match was found to any known scientific names,
+    and what kinds of matches were found (e.g. Exact, Fuzzy, Partial etc).
+
+
+    The API also provides information which
+    [data-sources](https://verifier.globalnames.org/data_sources) contain the
+    names, but does not give details about exact name-strings stored in the
+    data-sources. If you need such additional details use [gnames-verifier
+    API](https://apidoc.globalnames.org/gnames-beta) instead.
+
+
+    The source code is located on [GitHub](https://github.com/gnames/gnmatcher).
+  contact:
+    name: Dmitry Mozzherin
+    url: 'https://github.com/dimus'
+    email: dmozzherin@gmail.com
+  license:
+    name: MIT
+    url: 'https://opensource.org/licenses/MIT'
+  version: 1.0.0-RC1
+servers:
+  - url: 'https://matcher.globalnames.org/api/v0'
+    description: Production server at globalnames.org
+paths:
+  /ping:
+    get:
+      responses:
+        '200':
+          description: A liveliness probe. Use it to ensure that the service is running.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: pong
+                
+                
+                
+  /version:
+    get:
+      responses:
+        '200':
+          description: Returns the version of `gnmatcher`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Version'
+                
+                
+                
+  /matches:
+    post:
+      description: Match name-strings against known scientific names.
+      requestBody:
+        description: Input object with an array name-strings and options.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Input'
+        required: true
+      responses:
+        '200':
+          description: Input strings and their matches to scientific names.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Output'
+                
+                
+                
+  /matches/{names}:
+    get:
+      description: Match name-strings separated by '|' character against known scientific names.
+      parameters: [
+        {
+          name: names,
+          in: path,
+          description: Strings to verify (separated by '|' character).,
+          required: true,
+          style: simple,
+          explode: false,
+          schema: {
+            type: string,
+            example: Pomatomus soltator|Bubo bubo|Isoetes longissimum
           }
         },
-        "description": "Version number and build time for `gnmatcher` app."
-      },
-      "Input": {
-        "type": "object",
-        "required": [
-          "names"
-        ],
-        "properties": {
-          "names": {
-            "type": "array",
-            "description": "Name-strings to match with known scientific names.\nIf the number of name-strings is higher than 5000, the array will be truncated to that number.\n",
-            "example": [
-              "Pomatomus soltator",
-              "Bubo bubo (Linnaeus, 1758)",
-              "Isoetes longissimum"
-            ],
-            "items": {
-              "type": "string"
-            }
-          },
-          "withSpeciesGroup": {
-            "type": "boolean",
-            "description": "Expand search to the species group (coordinated names in zoology, autonyms in botany).\nFor example, if a given name-string is `Aus bus`, search also for `Aus bus bus` and vice versa.\n",
-            "example": false
-          },
-          "dataSources": {
-            "type": "array",
-            "description": "Optional list of data-sources Ids to be used for matching.\nIf data-sources Ids are given, the matching is limited to these data-sources.\n\nBy default dataSources array is empty, and matches happen across all data-sources.\n",
-            "example": [
-              1,
-              170,
-              12
-            ],
-            "items": {
-              "type": "integer",
-              "description": "An Id of a data-source according to `https://verifier.globalnames.org/data_sources`"
-            }
-          }
-        }
-      },
-      "Output": {
-        "type": "object",
-        "description": "Provides the results of name-strings matching.",
-        "required": [
-          "metadata",
-          "matches"
-        ],
-        "properties": {
-          "metadata": {
-            "$ref": "#/components/schemas/Metadata"
-          },
-          "matches": {
-            "type": "array",
-            "description": "The found matches to name-strings.",
-            "items": {
-              "$ref": "#/components/schemas/Match"
-            }
-          }
-        }
-      },
-      "Metadata": {
-        "type": "object",
-        "description": "Contains the summary of results and configuration parameters of the match.",
-        "required": [
-          "namesNum"
-        ],
-        "properties": {
-          "namesNum": {
-            "type": "integer",
-            "description": "The number of name-strings in the input.",
-            "example": 3
-          },
-          "withSpeciesGroup": {
-            "type": "boolean",
-            "description": "Is true if the match was extended to `species group`.\nIt means that searching for `Aus bus` would also search for `Aus bus bus` and vice versa.\n"
-          },
-          "dataSources": {
-            "type": "array",
-            "description": "Provides information about data-sources Ids given in the `Input` to constrain the matches.",
-            "example": [
-              1,
-              170,
-              12
-            ],
-            "items": {
-              "type": "integer"
-            }
-          }
-        }
-      },
-      "Match": {
-        "required": [
-          "id",
-          "name",
-          "matchType"
-        ],
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "UUID v5 generated from input name-string.\nIt is always the same for identical name-strings.\n",
-            "example": "2284b0d6-d965-5c39-ace5-3ef673da6691"
-          },
-          "name": {
-            "type": "string",
-            "description": "The input name-string.",
-            "example": "Pomatomus soltator"
-          },
-          "matchType": {
-            "type": "string",
-            "description": "A type of the match. Can be one of\n- `NoMatch`\n- `Partial Fuzzy`\n- `Partial Exact`\n- `Fuzzy`\n- `Exact`\n- `ExactSpeciesGroup`\n- `Virus`\n\nNote that `Exact` match is for `canonical form` and doesnot take in account authors.\nThe \"root\" `matchType` corresponds to the best found match.\n",
-            "example": "Fuzzy"
-          },
-          "matchItems": {
-            "type": "array",
-            "description": "Matched canonical forms, virus names.",
-            "items": {
-              "$ref": "#/components/schemas/MatchItem"
-            }
+        {
+          name: data_sources,
+          in: query,
+          description: Array of selected data-sources IDs separated by '|'.,
+          required: false,
+          style: form,
+          explode: true,
+          schema: {
+            type: string,
+            example: 1|12
           }
         },
-        "description": "Match result for one string."
-      },
-      "MatchItem": {
-        "required": [
-          "id",
-          "matchString",
-          "matchType",
-          "editDistance",
-          "editDistanceStem"
-        ],
-        "type": "object",
-        "description": "Matched `canonical form` or virus name with corresponding metadata.",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "UUID v5 generated from the `matchedString`.\nIt is always the same for identical strings.\n",
-            "example": "2cf19440-46c2-52c5-9fce-d66194286102"
-          },
-          "matchedString": {
-            "type": "string",
-            "description": "Matched virus name or the `canonical form` that matched the input's `name`.\nVirus here is used in a very relaxed meaning and includes viruses and other non-cellular entities like prions, plasmids etc.\n",
-            "example": "Pomatomus saltator"
-          },
-          "editDistance": {
-            "type": "integer",
-            "description": "Edit distance between input's `canonical form` and `matchedString` according to Levenshtein algorithm.\n",
-            "example": 1
-          },
-          "editDistanceStem": {
-            "type": "integer",
-            "description": "Edit distance between input's `stemmed canonical form` and stemmed `matchedString` according to Levenshtein algorithm.\nThe `stemmed canonical form has the genus unchanged, but species epithets are stripped from\nsuffixes.\n",
-            "example": 1
-          },
-          "dataSources": {
-            "type": "array",
-            "description": "Ids of data-sources that contain the `matchedItem`.\nNote that if Input does contain data-sources, only a subset of these data-sources will be provided.\n",
-            "example": [
-              1,
-              12
-            ],
-            "items": {
-              "type": "integer",
-              "description": "data-source Id"
-            }
+        {
+          name: species_group,
+          in: query,
+          description: Expands the search to species group where applicable.,
+          required: false,
+          style: form,
+          explode: true,
+          schema: {
+            type: boolean,
+            example: false
           }
         }
-      }
-    }
-  }
-}
+      ]
+      responses:
+        '200':
+          description: Input strings and their matches to scientific names.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Output'
+
+
+
+
+components:
+  schemas:
+    Version:
+      required:
+        - build
+        - version
+      type: object
+      properties:
+        version:
+          type: string
+          description: The version number of `gnmatcher`.
+          example: v0.9.9
+        build:
+          type: string
+          description: The compilation timestamp.
+          example: '2022-05-24_17:39:49UTC'
+      description: Version number and build time for `gnmatcher` app.
+      
+      
+      
+    Input:
+      type: object
+      required:
+        - names
+      properties:
+        names:
+          type: array
+          description: >
+            Name-strings to match with known scientific names.
+
+            If the number of name-strings is higher than 5000, the array will be
+            truncated to that number.
+          example:
+            - Pomatomus soltator
+            - 'Bubo bubo (Linnaeus, 1758)'
+            - Isoetes longissimum
+          items:
+            type: string
+        withSpeciesGroup:
+          type: boolean
+          description: >
+            Expand search to the species group (coordinated names in zoology,
+            autonyms in botany).
+
+            For example, if a given name-string is `Aus bus`, search also for
+            `Aus bus bus` and vice versa.
+          example: false
+        dataSources:
+          type: array
+          description: >
+            Optional list of data-sources Ids to be used for matching.
+
+            If data-sources Ids are given, the matching is limited to these
+            data-sources.
+
+
+            By default dataSources array is empty, and matches happen across all
+            data-sources.
+          example:
+            - 1
+            - 170
+            - 12
+          items:
+            type: integer
+            description: >-
+              An Id of a data-source according to
+              `https://verifier.globalnames.org/data_sources`
+              
+              
+              
+    Output:
+      type: object
+      description: Provides the results of name-strings matching.
+      required:
+        - metadata
+        - matches
+      properties:
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        matches:
+          type: array
+          description: The found matches to name-strings.
+          items:
+            $ref: '#/components/schemas/Match'
+            
+            
+            
+    Metadata:
+      type: object
+      description: >-
+        Contains the summary of results and configuration parameters of the
+        match.
+      required:
+        - namesNum
+      properties:
+        namesNum:
+          type: integer
+          description: The number of name-strings in the input.
+          example: 3
+        withSpeciesGroup:
+          type: boolean
+          description: >
+            Is true if the match was extended to `species group`.
+
+            It means that searching for `Aus bus` would also search for `Aus bus
+            bus` and vice versa.
+        dataSources:
+          type: array
+          description: >-
+            Provides information about data-sources Ids given in the `Input` to
+            constrain the matches.
+          example:
+            - 1
+            - 170
+            - 12
+          items:
+            type: integer
+            
+            
+            
+    Match:
+      required:
+        - id
+        - name
+        - matchType
+      type: object
+      properties:
+        id:
+          type: string
+          description: |
+            UUID v5 generated from input name-string.
+            It is always the same for identical name-strings.
+          example: 2284b0d6-d965-5c39-ace5-3ef673da6691
+        name:
+          type: string
+          description: The input name-string.
+          example: Pomatomus soltator
+        matchType:
+          type: string
+          description: >
+            A type of the match. Can be one of
+
+            - `NoMatch`
+
+            - `Partial Fuzzy`
+
+            - `Partial Exact`
+
+            - `Fuzzy`
+
+            - `Exact`
+
+            - `ExactSpeciesGroup`
+
+            - `Virus`
+
+
+            Note that `Exact` match is for `canonical form` and doesnot take in
+            account authors.
+
+            The "root" `matchType` corresponds to the best found match.
+          example: Fuzzy
+        matchItems:
+          type: array
+          description: 'Matched canonical forms, virus names.'
+          items:
+            $ref: '#/components/schemas/MatchItem'
+      description: Match result for one string.
+      
+      
+      
+    MatchItem:
+      required:
+        - id
+        - matchString
+        - matchType
+        - editDistance
+        - editDistanceStem
+      type: object
+      description: Matched `canonical form` or virus name with corresponding metadata.
+      properties:
+        id:
+          type: string
+          description: |
+            UUID v5 generated from the `matchedString`.
+            It is always the same for identical strings.
+          example: 2cf19440-46c2-52c5-9fce-d66194286102
+        matchedString:
+          type: string
+          description: >
+            Matched virus name or the `canonical form` that matched the input's
+            `name`.
+
+            Virus here is used in a very relaxed meaning and includes viruses
+            and other non-cellular entities like prions, plasmids etc.
+          example: Pomatomus saltator
+        editDistance:
+          type: integer
+          description: >
+            Edit distance between input's `canonical form` and `matchedString`
+            according to Levenshtein algorithm.
+          example: 1
+        editDistanceStem:
+          type: integer
+          description: >
+            Edit distance between input's `stemmed canonical form` and stemmed
+            `matchedString` according to Levenshtein algorithm.
+
+            The `stemmed canonical form has the genus unchanged, but species
+            epithets are stripped from
+
+            suffixes.
+          example: 1
+        dataSources:
+          type: array
+          description: >
+            Ids of data-sources that contain the `matchedItem`.
+
+            Note that if Input does contain data-sources, only a subset of these
+            data-sources will be provided.
+          example:
+            - 1
+            - 12
+          items:
+            type: integer
+            description: data-source Id
