@@ -16,7 +16,7 @@
   },
   "servers": [
     {
-      "url": "https://gnfinder.globalnames.org/api/v0",
+      "url": "https://gnfinder.globalnames.org/api/v1",
       "description": "Production GNfinder service"
     }
   ],
