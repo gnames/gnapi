@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: Global Names Verifier API/V0 (Current)
+  title: Global Names Verifier API
   description: >
     This RESTful API to matches (reconciles and resolves) putative name-strings to known scientific names.
 
