@@ -8,7 +8,7 @@ info:
     
     ```
     curl -v -F sources[]=1 -F sources[]=12 -F file=@path/to/file.pdf \
-      https://finder.globalnames.org/api/v0/find
+      https://finder.globalnames.org/api/v1/find
     ```
 
 
@@ -68,7 +68,7 @@ paths:
           
           ```
           curl -v -F sources[]=1 -F sources[]=12 -F file=@path/to/file.pdf \
-            https://finder.globalnames.org/api/v0/find
+            https://finder.globalnames.org/api/v1/find
           ```
         content:
           application/json:
@@ -211,7 +211,7 @@ components:
           description: |
             When this flag is true, there is an addional verification step for detected names.
             
-            This step requires internet connection and uses `https://gnames.globalnames.org/api/v0` for verification queries.
+            This step requires internet connection and uses `https://verifier.globalnames.org/api/v1` for verification queries.
         sources:
           type: array
           example:

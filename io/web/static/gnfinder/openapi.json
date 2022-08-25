@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Global Names Finder API",
-    "description": "`GNfinder` takes a text in UTF-8 encoding, detects and verifies scientific names out of the text.\n\nIt is possilble to use the API to find names in files\n\n```\ncurl -v -F sources[]=1 -F sources[]=12 -F file=@path/to/file.pdf \\\n  https://finder.globalnames.org/api/v0/find\n```\n\n\nIf you found a bug or want to request a feature for the API, create an issue at\n\n`https://github.com/gnames/gnfinder/issues`\n",
+    "description": "`GNfinder` takes a text in UTF-8 encoding, detects and verifies scientific names out of the text.\n\nIt is possilble to use the API to find names in files\n\n```\ncurl -v -F sources[]=1 -F sources[]=12 -F file=@path/to/file.pdf \\\n  https://finder.globalnames.org/api/v1/find\n```\n\n\nIf you found a bug or want to request a feature for the API, create an issue at\n\n`https://github.com/gnames/gnfinder/issues`\n",
     "contact": {
       "name": "Dmitry Mozzherin",
       "url": "https://github.com/dimus",
@@ -58,7 +58,7 @@
       "post": {
         "description": "Detects scientific names in supplied text or URL.",
         "requestBody": {
-          "description": "Takes a UTF8-encoded text, or a URL and detects scientific names in their content.\n\nFor details and documentation see the Schema tab.\n\nIt is also possible to upload a file using the following example\n\n\n```\ncurl -v -F sources[]=1 -F sources[]=12 -F file=@path/to/file.pdf \\\n  https://finder.globalnames.org/api/v0/find\n```\n",
+          "description": "Takes a UTF8-encoded text, or a URL and detects scientific names in their content.\n\nFor details and documentation see the Schema tab.\n\nIt is also possible to upload a file using the following example\n\n\n```\ncurl -v -F sources[]=1 -F sources[]=12 -F file=@path/to/file.pdf \\\n  https://finder.globalnames.org/api/v1/find\n```\n",
           "content": {
             "application/json": {
               "schema": {
@@ -174,7 +174,7 @@
           "verification": {
             "type": "boolean",
             "example": true,
-            "description": "When this flag is true, there is an addional verification step for detected names.\n\nThis step requires internet connection and uses `https://gnames.globalnames.org/api/v0` for verification queries.\n"
+            "description": "When this flag is true, there is an addional verification step for detected names.\n\nThis step requires internet connection and uses `https://verifier.globalnames.org/api/v1` for verification queries.\n"
           },
           "sources": {
             "type": "array",
