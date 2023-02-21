@@ -146,7 +146,7 @@
           "oddsDetails": {
             "type": "boolean",
             "example": false,
-            "description": "If true, the resul will contain odds of all features used for calculation of NaiveBayes odds.\n\nOdds describe probabiliby of a name to be 'real'. The higher the odds, the higher the probability that a dectected name is not a falst positive.\n\nOdds are calculated by multiplication of the odds of separate features.\n\nOdds details explain how the final odds value is calculated.\n"
+            "description": "If true, the result will contain odds of all features used for calculation of NaiveBayes odds.\n\nOdds describe probability of a name to be 'real'. The higher the odds, the higher the probability that a dectected name is not a false positive.\n\nOdds are calculated by multiplication of the odds of separate features.\n\nOdds details explain how the final odds value is calculated.\n"
           },
           "language": {
             "type": "string",
@@ -161,7 +161,7 @@
           "wordsAround": {
             "type": "integer",
             "example": 0,
-            "description": "Allows to see the context surrounding a name-string.\n\nThe `wordsAround` parameter sets the number of words returned to output, which are located immideately before or after a detected name.\n\nDefault is 0, maximum value is 5.\n",
+            "description": "Allows to see the context surrounding a name-string.\n\nThe `wordsAround` parameter sets the number of words returned to output, which are located immediately before or after a detected name.\n\nDefault is 0, maximum value is 5.\n",
             "enum": [
               0,
               1,
@@ -174,7 +174,7 @@
           "verification": {
             "type": "boolean",
             "example": true,
-            "description": "When this flag is true, there is an addional verification step for detected names.\n\nThis step requires internet connection and uses `https://verifier.globalnames.org/api/v1` for verification queries.\n"
+            "description": "When this flag is true, there is an additional verification step for detected names.\n\nThis step requires internet connection and uses `https://verifier.globalnames.org/api/v1` for verification queries.\n"
           },
           "sources": {
             "type": "array",
@@ -191,7 +191,7 @@
           },
           "withAllMatches": {
             "type": "boolean",
-            "description": "When this option is true all found results are returned.\n\nThe `bestResult` field in this case is null, and `results` field should contain found resulsts of the matches.\n",
+            "description": "When this option is true all found results are returned.\n\nThe `bestResult` field in this case is null, and `results` field should contain found results of the matches.\n",
             "example": false
           }
         }
@@ -237,7 +237,7 @@
           "inputFile": {
             "type": "string",
             "example": "names.txt",
-            "description": "Appers if a file was sent to the API for the name detection.\n\nAn example of sending a file to the API via POST is given at the start of the API documentation.\n"
+            "description": "Appears if a file was sent to the API for the name detection.\n\nAn example of sending a file to the API via POST is given at the start of the API documentation.\n"
           },
           "textExtractionSec": {
             "type": "number",
