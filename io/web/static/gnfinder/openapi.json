@@ -12,7 +12,7 @@
       "name": "MIT",
       "url": "https://opensource.org/licenses/MIT"
     },
-    "version": "1.0.0"
+    "version": "1.1.0"
   },
   "servers": [
     {
@@ -68,6 +68,148 @@
           },
           "required": true
         },
+        "responses": {
+          "200": {
+            "description": "An array of verification results.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinderResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/find/{text}": {
+      "get": {
+        "description": "Detects scientific names in supplied text of URL",
+        "parameters": [
+          {
+            "name": "text",
+            "in": "path",
+            "description": "A text (or URL pointing to a text) for name detection.\n\"Pardosa moesta is spider\"\nor\nhttps://en.wikipedia.org/wiki/Spider\n",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "example": "Thalictroides, 18s per doz.\nvitifoiia, Is. 6d. each\nCalopogon, or Cymbidium pul-\n\ncheilum, 1 5s. per doz.\nConostylis americana, 2i. 6d.\n"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "sets the output format. It can be set to:\n    \n  - csv (default)\n  - tsv\n  - json\n",
+            "schema": {
+              "type": "string",
+              "example": "tsv"
+            }
+          },
+          {
+            "name": "bytes_offset",
+            "in": "query",
+            "description": "This flag changes how the position of a detected name in text is calculated.\n  \nNormally a name's `start` and `end` positions are given as the number of `UTF-8` characters from the beginning of the text.\n  \nIf `bytesOffset` flag is `true`, the `start` and `end` offsets are recalculated in the number of `bytes`.\n",
+            "schema": {
+              "type": "boolean",
+              "example": false
+            }
+          },
+          {
+            "name": "return_content",
+            "in": "query",
+            "description": "If this flag is `true`, the text used for the name detection is returned back.\n  \nThis flag is especially useful if the input was not a plain UTF-8 text and had to be prepared for name-finding.\n  \nThen the returned content can be used together with `start` and `end` fields of detected name-strings to locate the strings in the text.\n",
+            "schema": {
+              "type": "boolean",
+              "example": false
+            }
+          },
+          {
+            "name": "unique_names",
+            "in": "query",
+            "description": "If this flag is `true`, the output returns a list of unique names, instead of a list of all name occurrences.\n  \nUnique list of names does not provide position information of a name in the text.\n",
+            "schema": {
+              "type": "boolean",
+              "example": false
+            }
+          },
+          {
+            "name": "ambiguous_names",
+            "in": "query",
+            "description": "If this flag is `true`, names which are simultaneously scientific names and \"normal\" words are not filtered out from the results.\n\nFor example generic names like `America`, `Cancer`, `Cafeteria` will be returned in the results.\n",
+            "schema": {
+              "type": "boolean",
+              "example": false
+            }
+          },
+          {
+            "name": "no_bayes",
+            "in": "query",
+            "description": "If this flag is `true`, only heuristic algorithms are used for name detection.\n",
+            "schema": {
+              "type": "boolean",
+              "example": false
+            }
+          },
+          {
+            "name": "odds_details",
+            "in": "query",
+            "description": "If true, the resul will contain odds of all features used for calculation of NaiveBayes odds.\n  \nOdds describe probabiliby of a name to be 'real'. The higher the odds, the higher the probability that a dectected name is not a falst positive.\n  \nOdds are calculated by multiplication of the odds of separate features.\n  \nOdds details explain how the final odds value is calculated.\n",
+            "schema": {
+              "type": "boolean",
+              "example": false
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "description": "The language of the text. Language value is used for calculation of Bayesian odds.\n  \nIf this parameter is not given, english language is used by default.\n  \nCurrently only English and German languages are supported.\n\nValid values are:\n\n  - eng\n  - deu\n  - detect\n",
+            "schema": {
+              "type": "string",
+              "example": "eng"
+            }
+          },
+          {
+            "name": "words_around",
+            "in": "query",
+            "description": "Allows to see the context surrounding a name-string.\n  \nThe `wordsAround` parameter sets the number of words returned to output, which are located immideately before or after a detected name.\n  \nDefault is 0, maximum value is 5.\n",
+            "schema": {
+              "type": "integer",
+              "example": 0
+            }
+          },
+          {
+            "name": "verification",
+            "in": "query",
+            "description": "When this flag is true, there is an addional verification step for detected names.\n  \nThis step requires internet connection and uses `https://verifier.globalnames.org/api/v1` for verification queries.\n",
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          },
+          {
+            "name": "sources",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "description": "The identifiers of the data-sources that are important for the user.\n\nNormally, only the \"best result\" is returned.\n\nIf there are preferred data-sources, their results will be always returned as well (if there is a match).\n",
+                "example": "1,12"
+              }
+            }
+          },
+          {
+            "name": "all_matches",
+            "in": "query",
+            "description": "When this option is true all found results are returned.\n  \nThe `bestResult` field in this case is null, and `results` field should contain found resulsts of the matches.\n",
+            "schema": {
+              "type": "boolean",
+              "example": false
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "An array of verification results.",
@@ -138,6 +280,11 @@
             "example": true,
             "description": "If this flag is `true`, the output returns a list of unique names, instead of a list of all name occurrences.\n\nUnique list of names does not provide position information of a name in the text.\n"
           },
+          "ambiguousNames": {
+            "type": "boolean",
+            "example": false,
+            "description": "If this flag is `true`, names which are simultaneously scientific names and \"normal\" words are not filtered out from the results.\n\nFor example generic names like `America`, `Cancer`, `Cafeteria` will be returned in the results.\n"
+          },
           "noBayes": {
             "type": "boolean",
             "example": false,
@@ -189,7 +336,7 @@
               "example": 1
             }
           },
-          "withAllMatches": {
+          "allMatches": {
             "type": "boolean",
             "description": "When this option is true all found results are returned.\n\nThe `bestResult` field in this case is null, and `results` field should contain found resulsts of the matches.\n",
             "example": false

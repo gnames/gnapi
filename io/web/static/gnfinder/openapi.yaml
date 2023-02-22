@@ -22,7 +22,7 @@ info:
   license:
     name: MIT
     url: 'https://opensource.org/licenses/MIT'
-  version: 1.0.0
+  version: 1.1.0
   
   
 servers:
@@ -52,7 +52,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Version'
-  
+    
   
   /find:
     post:
@@ -83,7 +83,164 @@ paths:
               schema:
                 $ref: '#/components/schemas/FinderResult'
 
+  /find/{text}:
+    get:
+      description: Detects scientific names in supplied text of URL
+      parameters:
+      - name: text
+        in: path
+        description: >
+          A text (or URL pointing to a text) for name detection.
+          
+          "Pardosa moesta is spider"
+          
+          or
+          
+          https://en.wikipedia.org/wiki/Spider
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: "Thalictroides, 18s per doz.\nvitifoiia, Is. 6d. each\nCalopogon, or Cymbidium pul-\n\ncheilum, 1 5s. per doz.\nConostylis americana, 2i. 6d.\n"
+      - name: format
+        in: query
+        description: >
+          sets the output format. It can be set to:
+              
+            - csv (default)
+            - tsv
+            - json
+        schema:
+          type: string
+          example: tsv
+      - name: bytes_offset
+        in: query
+        description: |
+          This flag changes how the position of a detected name in text is calculated.
+            
+          Normally a name's `start` and `end` positions are given as the number of `UTF-8` characters from the beginning of the text.
+            
+          If `bytesOffset` flag is `true`, the `start` and `end` offsets are recalculated in the number of `bytes`.
+        schema:
+          type: boolean
+          example: false
+      - name: return_content
+        in: query
+        description: |
+          If this flag is `true`, the text used for the name detection is returned back.
+            
+          This flag is especially useful if the input was not a plain UTF-8 text and had to be prepared for name-finding.
+            
+          Then the returned content can be used together with `start` and `end` fields of detected name-strings to locate the strings in the text.
+        schema:
+          type: boolean
+          example: false
+      - name: unique_names
+        in: query
+        description: |
+          If this flag is `true`, the output returns a list of unique names, instead of a list of all name occurrences.
+            
+          Unique list of names does not provide position information of a name in the text.
+        schema:
+          type: boolean
+          example: false
+      - name: ambiguous_names
+        in: query
+        description: |
+          If this flag is `true`, names which are simultaneously scientific names and "normal" words are not filtered out from the results.
+          
+          For example generic names like `America`, `Cancer`, `Cafeteria` will be returned in the results.
+        schema:
+          type: boolean
+          example: false
+      - name: no_bayes
+        in: query
+        description: |
+          If this flag is `true`, only heuristic algorithms are used for name detection.
+        schema:
+          type: boolean
+          example: false
+      - name: odds_details
+        in: query
+        description: |
+          If true, the resul will contain odds of all features used for calculation of NaiveBayes odds.
+            
+          Odds describe probabiliby of a name to be 'real'. The higher the odds, the higher the probability that a dectected name is not a falst positive.
+            
+          Odds are calculated by multiplication of the odds of separate features.
+            
+          Odds details explain how the final odds value is calculated.
+        schema:
+          type: boolean
+          example: false
+      - name: language
+        in: query
+        description: |
+          The language of the text. Language value is used for calculation of Bayesian odds.
+            
+          If this parameter is not given, english language is used by default.
+            
+          Currently only English and German languages are supported.
+          
+          Valid values are:
+          
+            - eng
+            - deu
+            - detect
+        schema:
+          type: string
+          example: eng
+      - name: words_around
+        in: query
+        description: |
+          Allows to see the context surrounding a name-string.
+            
+          The `wordsAround` parameter sets the number of words returned to output, which are located immideately before or after a detected name.
+            
+          Default is 0, maximum value is 5.
+        schema:
+          type: integer
+          example: 0
 
+      - name: verification
+        in: query
+        description: |
+          When this flag is true, there is an addional verification step for detected names.
+            
+          This step requires internet connection and uses `https://verifier.globalnames.org/api/v1` for verification queries.
+        schema:
+          type: boolean
+          example: true
+      - name: sources
+        in: query
+        schema:
+          type: array
+          items:
+            type: integer
+            description: |
+              The identifiers of the data-sources that are important for the user.
+              
+              Normally, only the "best result" is returned.
+              
+              If there are preferred data-sources, their results will be always returned as well (if there is a match).
+            example: 1,12
+      - name: all_matches
+        in: query
+        description: |
+          When this option is true all found results are returned.
+            
+          The `bestResult` field in this case is null, and `results` field should contain found resulsts of the matches.
+        schema:
+          type: boolean
+          example: false
+      responses:
+        '200':
+          description: An array of verification results.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinderResult'
 
 
 components:
@@ -160,6 +317,13 @@ components:
             If this flag is `true`, the output returns a list of unique names, instead of a list of all name occurrences.
             
             Unique list of names does not provide position information of a name in the text.
+        ambiguousNames:
+          type: boolean
+          example: false
+          description: |
+            If this flag is `true`, names which are simultaneously scientific names and "normal" words are not filtered out from the results.
+          
+            For example generic names like `America`, `Cancer`, `Cafeteria` will be returned in the results.
         noBayes:
           type: boolean
           example: false
@@ -227,7 +391,7 @@ components:
               
               If there are preferred data-sources, their results will be always returned as well (if there is a match).
             example: 1
-        withAllMatches:
+        allMatches:
           type: boolean
           description: |
             When this option is true all found results are returned.
