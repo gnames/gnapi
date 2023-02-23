@@ -85,14 +85,14 @@ paths:
 
   /find/{text}:
     get:
-      description: Detects scientific names in supplied text of URL
+      description: Detects scientific names in a supplied text or URL
       parameters:
       - name: text
         in: path
         description: >
           A text (or URL pointing to a text) for name detection.
           
-          "Pardosa moesta is spider"
+          "Pardosa moesta is a spider"
           
           or
           
@@ -148,7 +148,7 @@ paths:
       - name: ambiguous_names
         in: query
         description: |
-          If this flag is `true`, names which are simultaneously scientific names and "normal" words are not filtered out from the results.
+          If this flag is `true`, strings which are simultaneously scientific names and "normal" words are not filtered out from the results.
           
           For example generic names like `America`, `Cancer`, `Cafeteria` will be returned in the results.
         schema:
@@ -164,7 +164,7 @@ paths:
       - name: odds_details
         in: query
         description: |
-          If true, the resul will contain odds of all features used for calculation of NaiveBayes odds.
+          If true, the result will contain odds of all features used for calculation of NaiveBayes odds.
             
           Odds describe probabiliby of a name to be 'real'. The higher the odds, the higher the probability that a dectected name is not a falst positive.
             
@@ -196,7 +196,9 @@ paths:
         description: |
           Allows to see the context surrounding a name-string.
             
-          The `wordsAround` parameter sets the number of words returned to output, which are located immideately before or after a detected name.
+          The `words_around` parameter sets the number of words located immediately before or after a detected name.
+
+          These words are then returned with the output.
             
           Default is 0, maximum value is 5.
         schema:
@@ -228,9 +230,9 @@ paths:
       - name: all_matches
         in: query
         description: |
-          When this option is true all found results are returned.
+          When this option is true all found results are returned, not only the `bestResults`.
             
-          The `bestResult` field in this case is null, and `results` field should contain found resulsts of the matches.
+          The `bestResult` field in this case is null, and `results` field should contain found results of the matches.
         schema:
           type: boolean
           example: false
@@ -321,7 +323,7 @@ components:
           type: boolean
           example: false
           description: |
-            If this flag is `true`, names which are simultaneously scientific names and "normal" words are not filtered out from the results.
+            If this flag is `true`, strings which are simultaneously scientific names and "normal" words are not filtered out from the results.
           
             For example generic names like `America`, `Cancer`, `Cafeteria` will be returned in the results.
         noBayes:
@@ -333,7 +335,7 @@ components:
           type: boolean
           example: false
           description: |
-            If true, the resul will contain odds of all features used for calculation of NaiveBayes odds.
+            If true, the result will contain odds of all features used for calculation of NaiveBayes odds.
             
             Odds describe probabiliby of a name to be 'real'. The higher the odds, the higher the probability that a dectected name is not a falst positive.
             
@@ -359,7 +361,9 @@ components:
           description: |
             Allows to see the context surrounding a name-string.
             
-            The `wordsAround` parameter sets the number of words returned to output, which are located immideately before or after a detected name.
+            The `wordsAround` parameter sets the number of words located immediately before or after a detected name.
+
+            These words are then returned in the output.
             
             Default is 0, maximum value is 5.
           enum:
@@ -394,9 +398,9 @@ components:
         allMatches:
           type: boolean
           description: |
-            When this option is true all found results are returned.
+            When this option is true all found results are returned, not only the `bestResult`.
             
-            The `bestResult` field in this case is null, and `results` field should contain found resulsts of the matches.
+            The `bestResult` field in this case is null, and `results` field should contain found results of the matches.
           example: false
     
     
