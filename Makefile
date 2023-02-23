@@ -46,7 +46,7 @@ buildrel:
 release: dockerhub
 	$(GOCLEAN); \
 	$(FLAGS_SHARED) GOOS=linux $(GORELEASE); \
-	tar zcvf /tmp/$(PROJ_NAME)-$(VER)-linux.tar.gz $(OUTPUT)/$(PROJ_NAME);
+	tar zcvf /tmp/$(PROJ_NAME)-$(VER)-linux.tar.gz $(OUTPUT);
 
 install:
 	$(FLAGS_SHARED) $(GOINSTALL);
