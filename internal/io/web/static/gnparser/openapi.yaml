@@ -3,7 +3,7 @@ openapi: 3.0.0
 info:
   title: Global Names Parser API
   description: |
-    GNparser takes a scientific name and splits it into
+    `GNparser` takes a scientific name and splits it into
     structural elements.
 
     Scientific names can be represented in many different
@@ -26,7 +26,7 @@ info:
     - Check if names contain syntactic mistakes.
     - Find semantic meaning of every word in a name.
 
-    The GNparser code and documentation is
+    The `GNparser` code and documentation is
     located at https://github.com/gnames/gnparser.
 
     For more examples see
@@ -38,10 +38,10 @@ info:
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
-  version: 1.3.0
+  version: 1.6.9
 servers:
 - url: https://parser.globalnames.org/api/v1
-  description: GNparser production service
+  description: '`GNparser` production service'
 paths:
   /{names}:
     get:
@@ -315,7 +315,7 @@ components:
             values are
 
             - maybe - if the genus has homonyms in other groups
-            - yes - if GNparser dictionary does not detect any homonyms
+            - yes - if `GNparser` dictionary does not detect any homonyms
 
             The bacterial names often contain strain information which are
             not parseable and are placed into the "tail" field.
@@ -406,7 +406,7 @@ components:
           example: f6a5b47b-9917-5a48-b0ff-366bc036ae9c
         version:
           type: string
-          description: version of GNparser
+          description: version of `GNparser`
           example: v1.3.0
       example:
         parsed: true
@@ -542,7 +542,7 @@ components:
           type: string
           description: |
             A simplified version of a name where some elements like
-            ranks, or hybrid signs "×" are ommited (hybrid signs are
+            ranks, or hybrid signs "×" are omitted (hybrid signs are
             present for hybrid formulas).
 
             It is most useful to match names in general.
@@ -574,7 +574,7 @@ components:
         normalized:
           type: string
           description: |
-            An authorship string normalized by gnparser
+            An authorship string normalized by `GNparser`
           example: H. Peragallo 1891
         year:
           type: string
@@ -596,7 +596,7 @@ components:
         combination:
           $ref: '#/components/schemas/AuthorGroup'
       description: |
-        Describes provided metainformation about authors of a name.
+        Describes provided meta-information about authors of a name.
         Sometimes authorship is provided for several elements of a
         name, for example in
         "Agalinis purpurea (L.) Briton var. borealis (Berg.) Peterson 1987"
@@ -623,7 +623,7 @@ components:
           $ref: '#/components/schemas/Authors'
       description: |
         Provided only if "with_details=true"
-        Group of authors belogning to a particular nomenclatural event.
+        Group of authors belonging to a particular nomenclatural event.
         We distinguish to possible situations when AuthorGroup is used.
 
         - original - authors of the original description of a name
@@ -887,7 +887,7 @@ components:
       properties:
         genus:
           type: string
-          description: genus in a bionomial name
+          description: genus in a binomial name
           example: Pycnodonte
         subgenus:
           type: string
@@ -953,7 +953,7 @@ components:
       properties:
         genus:
           type: string
-          description: genus in a bionomial name
+          description: genus in a binomial name
           example: Melanella
         species:
           type: string
@@ -973,7 +973,7 @@ components:
       properties:
         genus:
           type: string
-          description: genus in a bionomial name
+          description: genus in a binomial name
           example: Pleistophora
         species:
           type: string
