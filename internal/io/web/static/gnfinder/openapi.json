@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Global Names Finder API",
-    "description": "`GNfinder` takes a text in UTF-8 encoding, detects and verifies scientific names out of the text.\n\nIt is possilble to use the API to find names in files\n\n```\ncurl -v -F sources[]=1 -F sources[]=12 -F file=@path/to/file.pdf \\\n  https://finder.globalnames.org/api/v1/find\n```\n\n\nIf you found a bug or want to request a feature for the API, create an issue at\n\n`https://github.com/gnames/gnfinder/issues`\n",
+    "description": "`GNfinder` takes a text in UTF-8 encoding, detects and verifies scientific names out of the text.\nIt is possible to use the API to find names in files\n```\ncurl -v -F sources[]=1 -F sources[]=12 -F file=@path/to/file.pdf \\\n  https://finder.globalnames.org/api/v1/find\n```\nIf you found a bug or want to request a feature for the API, create an issue at\n\n`https://github.com/gnames/gnfinder/issues`\n",
     "contact": {
       "name": "Dmitry Mozzherin",
       "url": "https://github.com/dimus",
@@ -58,7 +58,7 @@
       "post": {
         "description": "Detects scientific names in supplied text or URL.",
         "requestBody": {
-          "description": "Takes a UTF8-encoded text, or a URL and detects scientific names in their content.\n\nFor details and documentation see the Schema tab.\n\nIt is also possible to upload a file using the following example\n\n\n```\ncurl -v -F sources[]=1 -F sources[]=12 -F file=@path/to/file.pdf \\\n  https://finder.globalnames.org/api/v1/find\n```\n",
+          "description": "Takes a UTF8-encoded text, or a URL and detects scientific names in their content.\nFor details and documentation see the Schema tab.\nIt is also possible to upload a file using the following example\n\n```\ncurl -v -F sources[]=1 -F sources[]=12 -F file=@path/to/file.pdf \\\n  https://finder.globalnames.org/api/v1/find\n```\n",
           "content": {
             "application/json": {
               "schema": {
@@ -89,7 +89,7 @@
           {
             "name": "text",
             "in": "path",
-            "description": "A text (or URL pointing to a text) for name detection.\n\"Pardosa moesta is a spider\"\nor\nhttps://en.wikipedia.org/wiki/Spider\n",
+            "description": "A text (or URL pointing to a text) for name detection.\n\n\"Pardosa moesta is a spider\"\n\nor\n\nhttps://en.wikipedia.org/wiki/Spider\n",
             "required": true,
             "style": "simple",
             "explode": false,
@@ -101,7 +101,7 @@
           {
             "name": "format",
             "in": "query",
-            "description": "sets the output format. It can be set to:\n    \n  - csv (default)\n  - tsv\n  - json\n",
+            "description": "sets the output format. It can be set to:\n\n  - csv (default)\n  - tsv\n  - json\n",
             "schema": {
               "type": "string",
               "example": "tsv"
@@ -110,7 +110,7 @@
           {
             "name": "bytes_offset",
             "in": "query",
-            "description": "This flag changes how the position of a detected name in text is calculated.\n  \nNormally a name's `start` and `end` positions are given as the number of `UTF-8` characters from the beginning of the text.\n  \nIf `bytesOffset` flag is `true`, the `start` and `end` offsets are recalculated in the number of `bytes`.\n",
+            "description": "This flag changes how the position of a detected name in text is calculated.\nNormally a name-string's `start` and `end` positions are given as the number of `UTF-8` characters from the beginning of the text.\nIf `bytesOffset` flag is `true`, the `start` and `end` offsets are recalculated in the number of `bytes`.\n",
             "schema": {
               "type": "boolean",
               "example": false
@@ -119,7 +119,7 @@
           {
             "name": "return_content",
             "in": "query",
-            "description": "If this flag is `true`, the text used for the name detection is returned back.\n  \nThis flag is especially useful if the input was not a plain UTF-8 text and had to be prepared for name-finding.\n  \nThen the returned content can be used together with `start` and `end` fields of detected name-strings to locate the strings in the text.\n",
+            "description": "If this flag is `true`, the text used for the name detection is returned back.\nThis flag is especially useful if the input was not a plain UTF-8 text and had to be prepared for name-finding.\nThen the returned content can be used together with `start` and `end` fields of detected name-strings to locate the strings in the text.\n",
             "schema": {
               "type": "boolean",
               "example": false
@@ -128,7 +128,7 @@
           {
             "name": "unique_names",
             "in": "query",
-            "description": "If this flag is `true`, the output returns a list of unique names, instead of a list of all name occurrences.\n  \nUnique list of names does not provide position information of a name in the text.\n",
+            "description": "If this flag is `true`, the output returns a list of unique names, instead of a list of all name occurrences.\nUnique list of names does not provide position information of a name in the text.\n",
             "schema": {
               "type": "boolean",
               "example": false
@@ -137,7 +137,7 @@
           {
             "name": "ambiguous_names",
             "in": "query",
-            "description": "If this flag is `true`, strings which are simultaneously scientific names and \"normal\" words are not filtered out from the results.\n\nFor example generic names like `America`, `Cancer`, `Cafeteria` will be returned in the results.\n",
+            "description": "If this flag is `true`, strings which are simultaneously scientific names and \"normal\" words are not filtered out from the results.\nFor example generic names like `America`, `Cancer`, `Cafeteria` will be returned in the results.\n",
             "schema": {
               "type": "boolean",
               "example": false
@@ -155,7 +155,7 @@
           {
             "name": "odds_details",
             "in": "query",
-            "description": "If true, the result will contain odds of all features used for calculation of NaiveBayes odds.\n  \nOdds describe probabiliby of a name to be 'real'. The higher the odds, the higher the probability that a dectected name is not a falst positive.\n  \nOdds are calculated by multiplication of the odds of separate features.\n  \nOdds details explain how the final odds value is calculated.\n",
+            "description": "If true, the result will contain odds of all features used for calculation of NaiveBayes odds.\nOdds describe probability of a name to be 'real'. The higher the odds, the higher the probability that a detected name is not a false positive.\nOdds are calculated by multiplication of the odds of separate features.\nOdds details explain how the final odds value is calculated.\n",
             "schema": {
               "type": "boolean",
               "example": false
@@ -164,7 +164,7 @@
           {
             "name": "language",
             "in": "query",
-            "description": "The language of the text. Language value is used for calculation of Bayesian odds.\n  \nIf this parameter is not given, english language is used by default.\n  \nCurrently only English and German languages are supported.\n\nValid values are:\n\n  - eng\n  - deu\n  - detect\n",
+            "description": "The language of the text. Language value is used for calculation of Bayesian odds.\nIf this parameter is not given, `eng` is used by default.\nCurrently only English and German languages are supported.\nValid values are:\n\n  - eng\n  - deu\n  - detect\n",
             "schema": {
               "type": "string",
               "example": "eng"
@@ -173,7 +173,7 @@
           {
             "name": "words_around",
             "in": "query",
-            "description": "Allows to see the context surrounding a name-string.\n  \nThe `words_around` parameter sets the number of words located immediately before or after a detected name.\n\nThese words are then returned with the output.\n  \nDefault is 0, maximum value is 5.\n",
+            "description": "Allows to see the context surrounding a name-string.\nThe `words_around` parameter sets the number of words located immediately before or after a detected name.\nThese words are then returned with the output.\nDefault is 0, maximum value is 5.\n",
             "schema": {
               "type": "integer",
               "example": 0
@@ -182,7 +182,7 @@
           {
             "name": "verification",
             "in": "query",
-            "description": "When this flag is true, there is an addional verification step for detected names.\n  \nThis step requires internet connection and uses `https://verifier.globalnames.org/api/v1` for verification queries.\n",
+            "description": "When this flag is true, there is an additional verification step for detected names.\nThis step requires internet connection and uses `https://verifier.globalnames.org/api/v1` for verification queries.\n",
             "schema": {
               "type": "boolean",
               "example": true
@@ -195,7 +195,7 @@
               "type": "array",
               "items": {
                 "type": "integer",
-                "description": "The identifiers of the data-sources that are important for the user.\n\nNormally, only the \"best result\" is returned.\n\nIf there are preferred data-sources, their results will be always returned as well (if there is a match).\n",
+                "description": "The identifiers of the data-sources that are important for the user.\nNormally, only the \"best result\" is returned.\nIf there are preferred data-sources, their results will be always returned as well (if there is a match).\n",
                 "example": "1,12"
               }
             }
@@ -203,7 +203,7 @@
           {
             "name": "all_matches",
             "in": "query",
-            "description": "When this option is true all found results are returned, not only the `bestResults`.\n  \nThe `bestResult` field in this case is null, and `results` field should contain found results of the matches.\n",
+            "description": "When this option is true all found results are returned, not only the `bestResults`.\nThe `bestResult` field in this case is null, and `results` field should contain found results of the matches.\n",
             "schema": {
               "type": "boolean",
               "example": false
@@ -253,7 +253,7 @@
           "text": {
             "type": "string",
             "example": "Thalictroides, 18s per doz.\nvitifoiia, Is. 6d. each\nCalopogon, or Cymbidium pul-\n\ncheilum, 1 5s. per doz.\nConostylis americana, 2i. 6d.\n",
-            "description": "Contains the text which will be checked for scientific names.\nIf this parameter is not empty, the `url` paramter is ignored.\n"
+            "description": "Contains the text which will be checked for scientific names.\nIf this parameter is not empty, the `url` parameter is ignored.\n"
           },
           "url": {
             "type": "string",
@@ -263,27 +263,27 @@
           "format": {
             "type": "string",
             "example": "tsv",
-            "description": "sets the output format. It can be set to:\n  \n  - csv (default)\n  - tsv\n  - json\n"
+            "description": "sets the output format. It can be set to:\n\n  - csv (default)\n  - tsv\n  - json\n"
           },
           "bytesOffset": {
             "type": "boolean",
             "example": false,
-            "description": "This flag changes how the position of a detected name in text is calculated.\n\nNormally a name's `start` and `end` positions are given as the number of `UTF-8` characters from the beginning of the text.\n\nIf `bytesOffset` flag is `true`, the `start` and `end` offsets are recalculated in the number of `bytes`.\n"
+            "description": "This flag changes how the position of a detected name in text is calculated.\nNormally a name's `start` and `end` positions are given as the number of `UTF-8` characters from the beginning of the text.\nIf `bytesOffset` flag is `true`, the `start` and `end` offsets are recalculated in the number of `bytes`.\n"
           },
           "returnContent": {
             "type": "boolean",
             "example": false,
-            "description": "If this flag is `true`, the text used for the name detection is returned back.\n\nThis flag is especially useful if the input was not a plain UTF-8 text and had to be prepared for name-finding.\n\nThen the returned content can be used together with `start` and `end` fields of detected name-strings to locate the strings in the text.\n"
+            "description": "If this flag is `true`, the text used for the name detection is returned back.\nThis flag is especially useful if the input was not a plain UTF-8 text and had to be prepared for name-finding.\nThen the returned content can be used together with `start` and `end` fields of detected name-strings to locate the strings in the text.\n"
           },
           "uniqueNames": {
             "type": "boolean",
             "example": true,
-            "description": "If this flag is `true`, the output returns a list of unique names, instead of a list of all name occurrences.\n\nUnique list of names does not provide position information of a name in the text.\n"
+            "description": "If this flag is `true`, the output returns a list of unique names, instead of a list of all name occurrences.\nUnique list of names does not provide position information of a name in the text.\n"
           },
           "ambiguousNames": {
             "type": "boolean",
             "example": false,
-            "description": "If this flag is `true`, strings which are simultaneously scientific names and \"normal\" words are not filtered out from the results.\n\nFor example generic names like `America`, `Cancer`, `Cafeteria` will be returned in the results.\n"
+            "description": "If this flag is `true`, strings which are simultaneously scientific names and \"normal\" words are not filtered out from the results.\nFor example generic names like `America`, `Cancer`, `Cafeteria` will be returned in the results.\n"
           },
           "noBayes": {
             "type": "boolean",
@@ -293,12 +293,12 @@
           "oddsDetails": {
             "type": "boolean",
             "example": false,
-            "description": "If true, the result will contain odds of all features used for calculation of NaiveBayes odds.\n\nOdds describe probabiliby of a name to be 'real'. The higher the odds, the higher the probability that a dectected name is not a falst positive.\n\nOdds are calculated by multiplication of the odds of separate features.\n\nOdds details explain how the final odds value is calculated.\n"
+            "description": "If true, the result will contain odds of all features used for calculation of NaiveBayes odds.\nOdds describe probability of a name to be 'real'. The higher the odds, the higher the probability that a detected name is not a false positive.\nOdds are calculated by multiplication of the odds of separate features.\nOdds details explain how the final odds value is calculated.\n"
           },
           "language": {
             "type": "string",
             "example": "eng",
-            "description": "The language of the text. Language value is used for calculation of Bayesian odds.\n\nIf this parameter is not given, english language is used by default.\n\nCurrently only English and German languages are supported.\n",
+            "description": "The language of the text. Language value is used for calculation of Bayesian odds.\nIf this parameter is not given, `eng` is used by default.\nCurrently only English and German languages are supported.\n",
             "enum": [
               "eng",
               "deu",
@@ -308,7 +308,7 @@
           "wordsAround": {
             "type": "integer",
             "example": 0,
-            "description": "Allows to see the context surrounding a name-string.\n\nThe `wordsAround` parameter sets the number of words located immediately before or after a detected name.\n\nThese words are then returned in the output.\n\nDefault is 0, maximum value is 5.\n",
+            "description": "Allows to see the context surrounding a name-string.\nThe `words_around` parameter sets the number of words located immediately before or after a detected name.\nThese words are then returned in the output.\nDefault is 0, maximum value is 5.\n",
             "enum": [
               0,
               1,
@@ -321,7 +321,7 @@
           "verification": {
             "type": "boolean",
             "example": true,
-            "description": "When this flag is true, there is an addional verification step for detected names.\n\nThis step requires internet connection and uses `https://verifier.globalnames.org/api/v1` for verification queries.\n"
+            "description": "When this flag is true, there is an additional verification step for detected names.\nThis step requires internet connection and uses `https://verifier.globalnames.org/api/v1` for verification queries.\n"
           },
           "sources": {
             "type": "array",
@@ -332,13 +332,13 @@
             ],
             "items": {
               "type": "integer",
-              "description": "The identifiers of the data-sources that are important for the user.\n\nNormally, only the \"best result\" is returned.\n\nIf there are preferred data-sources, their results will be always returned as well (if there is a match).\n",
+              "description": "The identifiers of the data-sources that are important for the user.\nNormally, only the \"best result\" is returned.\nIf there are preferred data-sources, their results will be always returned as well (if there is a match).\n",
               "example": 1
             }
           },
           "allMatches": {
             "type": "boolean",
-            "description": "When this option is true all found results are returned, not only the `bestResult`.\n\nThe `bestResult` field in this case is null, and `results` field should contain found results of the matches.\n",
+            "description": "When this option is true all found results are returned, not only the `bestResult`.\nThe `bestResult` field in this case is null, and `results` field should contain found results of the matches.\n",
             "example": false
           }
         }
@@ -384,12 +384,12 @@
           "inputFile": {
             "type": "string",
             "example": "names.txt",
-            "description": "Appers if a file was sent to the API for the name detection.\n\nAn example of sending a file to the API via POST is given at the start of the API documentation.\n"
+            "description": "Appears if a file was sent to the API for the name detection.\nAn example of sending a file to the API via POST is given at the start of the API documentation.\n"
           },
           "textExtractionSec": {
             "type": "number",
             "example": 0.107,
-            "description": "The time spent on convertion of a file to a plain UTF8-encoded text.\nThis value appears only if a file was sent to the API for name-detection.\n"
+            "description": "The time spent on the conversion of a file to a plain UTF8-encoded text.\nThis value appears only if a file was sent to the API for name-detection.\n"
           },
           "nameFindingSec": {
             "type": "number",
@@ -404,12 +404,12 @@
           "totalSec": {
             "type": "number",
             "example": 0.683,
-            "description": "Total time spent on all required subprocessess."
+            "description": "Total time spent on all required sub-processes."
           },
           "wordsAround": {
             "type": "integer",
             "example": 0,
-            "description": "Indicates the number of words before and after detected name that will be provided in the results.\n\nBy default it would be 0.\n"
+            "description": "Indicates the number of words before and after detected name that will be provided in the results.\nBy default it would be 0.\n"
           },
           "language": {
             "type": "string",
@@ -436,22 +436,22 @@
           "withBayes": {
             "type": "boolean",
             "example": true,
-            "description": "Indicates if Naive Bayes algorithms participated in the names detection.\n\nBy default it would be true.\n"
+            "description": "Indicates if Naive Bayes algorithms participated in the names detection.\nBy default it would be true.\n"
           },
           "withOddsAdjustment": {
             "type": "boolean",
             "example": false,
-            "description": "If true, GNfinder recalculates prior odds according to the number of names found in the text divided by the number of capitalized words.\n\nIf the text has less than 10 capitalized words, this setting is ignored.\n\nBy default it would be false.\n"
+            "description": "If true, GNfinder recalculates prior odds according to the number of names found in the text divided by the number of capitalized words.\nIf the text has less than 10 capitalized words, this setting is ignored.\nBy default it would be false.\n"
           },
           "withPositionInBytes": {
             "type": "boolean",
             "example": false,
-            "description": "This flag changes how the position of a detected name in text is calculated.\n\nNormally a name's `start` and `end` positions are given as the number of `UTF-8` characters from the beginning of the text.\n\nIf the flag is `true`, the `start` and `end` offsets are recalculated in the number of `bytes`.\n"
+            "description": "This flag changes how the position of a detected name in text is calculated.\nNormally a name's `start` and `end` positions are given as the number of `UTF-8` characters from the beginning of the text.\nIf the flag is `true`, the `start` and `end` offsets are recalculated in the number of `bytes`.\n"
           },
           "withVerification": {
             "type": "boolean",
             "example": false,
-            "description": "If true, there is an additional verification step that uses a remote `https://gnames.globalnames.org/api/v1` service to check if found names do exist in a variety of biodiversity databases.\n\nBy default it would be `false`.\n"
+            "description": "If true, there is an additional verification step that uses a remote `https://gnames.globalnames.org/api/v1` service to check if found names do exist in a variety of biodiversity databases.\nBy default it would be `false`.\n"
           },
           "withLanguageDetection": {
             "type": "boolean",
@@ -465,12 +465,12 @@
           "totalNameCandidates": {
             "type": "integer",
             "example": 5,
-            "description": "Provides the number of capitalized words that could be a start of a scientific name.\n\nThis number can be used for calculating a document-specific prior odds `totalNames/totalCandidates`.\n"
+            "description": "Provides the number of capitalized words that could be a start of a scientific name.\nThis number can be used for calculating a document-specific prior odds `totalNames/totalCandidates`.\n"
           },
           "totalNames": {
             "type": "integer",
             "example": 2,
-            "description": "The number of detectd names in the text."
+            "description": "The number of detected names in the text."
           },
           "kingdoms": {
             "type": "array",
@@ -482,7 +482,7 @@
           "mainTaxon": {
             "type": "string",
             "example": "Araneae",
-            "description": "The lowest taxon that contains the majority of detected names.\n\nWe use a subset of detected names that did get verified to a Catalogue of Life taxa.\n"
+            "description": "The lowest taxon that contains the majority of detected names.\nWe use a subset of detected names that did get verified to a Catalogue of Life taxa.\n"
           },
           "mainTaxonRank": {
             "type": "string",
@@ -496,7 +496,7 @@
           },
           "statsNamesNum": {
             "type": "integer",
-            "description": "Is the number of names used for calculating statistics.\n\nIt includes names that are genus and lower and are verified to the Catalogue of Life.\n"
+            "description": "Is the number of names used for calculating statistics.\nIt includes names that are genus and lower and are verified to the Catalogue of Life.\n"
           }
         }
       },
@@ -545,21 +545,21 @@
         "properties": {
           "cardinality": {
             "type": "integer",
-            "description": "A cardinality value of the detected name.\n\nBinomial names have cardinality 2, uninomials have cardinalty 1 etc.\n\nCardinality 0 means we cannot determine cardinality of a string.\n",
+            "description": "A cardinality value of the detected name.\nBinomial names have cardinality 2, uninomials have cardinality 1 etc.\nCardinality 0 means we cannot determine cardinality of a string.\n",
             "example": 2
           },
           "verbatim": {
             "type": "string",
-            "description": "Detected name, as it was found in text with new lines, punctuations etc.\n\nNew lines for better readability are substituted with '␤' character.\n",
+            "description": "Detected name, as it was found in text with new lines, punctuations etc.\nNew lines for better readability are substituted with '␤' character.\n",
             "example": "Cymbidium pul-␤␤cheilum,"
           },
           "name": {
             "type": "string",
-            "description": "String representation of a name after cleaning.\n\nIf a name contains non-standard characters introduced during optical character recognition, they are substituted with '�' character.\n"
+            "description": "String representation of a name after cleaning.\nIf a name contains non-standard characters introduced during optical character recognition, they are substituted with '\ufffd' character.\n"
           },
           "oddsLog10": {
             "type": "number",
-            "description": "Odds reflect a probability that some feature is true.\n\nIn our case the higher the odds, the higher is the probability that a detected name is 'real'.\n\nEqual odds are a ration 1/1, meaning for every 'true' event there is one 'false' event, the same can be expressed as a probability 0.5.\nWe provide a log base 10 of odds.\n\nThat means that log10 2 is the same as 100, log1 is the same as 10 log10 0 is the same as 1.\n\nIf log is negative, it means Bayes algorithm considers an event to be unlikely.\n",
+            "description": "Odds reflect a probability that some feature is true.\nIn our case the higher the odds, the higher is the probability that a detected name is 'real'.\nEqual odds are a ration 1/1, meaning for every 'true' event there is one 'false' event, the same can be expressed as a probability 0.5.\nWe provide a log base 10 of odds.\nThat means that log10 2 is the same as 100, log1 is the same as 10 log10 0 is the same as 1.\nIf log is negative, it means Bayes algorithm considers an event to be unlikely.\n",
             "example": 7.276255952698947
           },
           "oddsDetails": {
@@ -575,24 +575,24 @@
                 "feature": {
                   "type": "string",
                   "example": "uniLen: 7",
-                  "description": "A Naive Bayes feature used for calculating odds.\n\nThe feature consists of its name or type, and a value.\n\nFor example 'uniLen' name is the length of the uninomial and the value of the length is 7 characters.\n"
+                  "description": "A Naive Bayes feature used for calculating odds.\nThe feature consists of its name or type, and a value.\nFor example 'uniLen' name is the length of the uninomial and the value of the length is 7 characters.\n"
                 },
                 "odds": {
                   "type": "number",
                   "example": 2.013,
-                  "description": "log10 of the odds calculated for the feature using precalculated weights for the feature."
+                  "description": "log10 of the odds calculated for the feature using pre-calculated weights for the feature."
                 }
               }
             }
           },
           "start": {
             "type": "integer",
-            "description": "The offset in UTF-8 characters from the beginning of the text to the start of a name.\n\nIf `withPositionInBytes` is true, offset is calculated in bytes instead.\n",
+            "description": "The offset in UTF-8 characters from the beginning of the text to the start of a name.\nIf `withPositionInBytes` is true, offset is calculated in bytes instead.\n",
             "example": 107
           },
           "offsetEnd": {
             "type": "integer",
-            "description": "The offset in UTF-8 characters from the beginning of the text to the end of a name.\n\nIf `withPositionInBytes` is true, offset is calculated in bytes instead.\n",
+            "description": "The offset in UTF-8 characters from the beginning of the text to the end of a name.\nIf `withPositionInBytes` is true, offset is calculated in bytes instead.\n",
             "example": 128
           },
           "annotNomen": {
@@ -602,7 +602,7 @@
           },
           "annotNomenType": {
             "type": "string",
-            "description": "Category of the nomenclatural annotation.\n\nThe same annotation type might have significant variability in literature.\n\nThis property provides a normalized value of an annotation.\n",
+            "description": "Category of the nomenclatural annotation.\nThe same annotation type might have significant variability in literature.\nThis property provides a normalized value of an annotation.\n",
             "enum": [
               "NO_ANNOT",
               "SP_NOV",
@@ -612,7 +612,7 @@
           },
           "wordsBefore": {
             "type": "array",
-            "description": "A list of words that preceed a name.\n\nThe number of words is determined by WordsAround parameter.\n",
+            "description": "A list of words that precede a name.\n\nThe number of words is determined by WordsAround parameter.\n",
             "items": {
               "type": "string"
             },
@@ -649,7 +649,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "An UUID v5 generated from the input string using \"globalnames.org\"\nDNS domain name as a seed. This UUID can be used as\na distributed global unique identifier of the string and\ncan be created independently in any popular programming language.\n",
+            "description": "An UUID v5 generated from the input string using \"globalnames.org\" DNS domain name as a seed.\nThis UUID can be used as a distributed global unique identifier of the string and can be created independently in any popular programming language.\n",
             "format": "uuid",
             "example": "2284b0d6-d965-5c39-ace5-3ef673da6691"
           },
@@ -685,7 +685,7 @@
           },
           "error": {
             "type": "string",
-            "description": "Normally an empty string.\n\nIn case of an unexpected error, it will be shown here. If error is not empty, it means that matching failed because of a bug in the system.\n"
+            "description": "Normally an empty string.\nIn case of an unexpected error, it will be shown here. If error is not empty, it means that matching failed because of a bug in the system.\n"
           }
         },
         "description": "Verification result for a particular input name-string."
@@ -695,7 +695,7 @@
         "properties": {
           "dataSourceId": {
             "type": "integer",
-            "description": "An ID of the data-source where the match was found.\n\nThis is a local ID at GlobalNames and it has been stable for more than 10 years.\n",
+            "description": "An ID of the data-source where the match was found.\nThis is a local ID at GlobalNames and it has been stable for more than 10 years.\n",
             "example": 1
           },
           "dataSourceTitleShort": {
@@ -705,12 +705,12 @@
           },
           "curation": {
             "type": "string",
-            "description": "A curation level for the record's data-source. If data-source\nis known to be curated, there is less risk of misspelling of the\nmatched name.\n",
+            "description": "A curation level for the record's data-source.\nIf data-source is known to be curated, there is less risk of misspelling of the matched name.\n",
             "example": "Curated"
           },
           "recordId": {
             "type": "string",
-            "description": "The record ID of the `matchedName` from the data-source.\n\nIf the data-source does not provide record ID, the ID is generated by `gnames` and is prepended with a 'gn_' prefix.\n",
+            "description": "The record ID of the `matchedName` from the data-source.\nIf the data-source does not provide record ID, the ID is generated by `gnames` and is prepended with a 'gn_' prefix.\n",
             "example": "TX123"
           },
           "globalId": {
@@ -720,7 +720,7 @@
           },
           "localId": {
             "type": "string",
-            "description": "An additional ID that is used internally by the data-source.\n\nQuite often such IDs are used by data-sources to generate URLs to their records.\n",
+            "description": "An additional ID that is used internally by the data-source.\nQuite often such IDs are used by data-sources to generate URLs to their records.\n",
             "example": "33"
           },
           "outlink": {
@@ -730,7 +730,7 @@
           },
           "entryDate": {
             "type": "string",
-            "description": "A date when a record was harvested to gnames.\n\nIt follows a pattern 'YYYY-MM-DD'.\n",
+            "description": "A date when a record was harvested to `gnames`.\n\nIt follows a pattern 'YYYY-MM-DD'.\n",
             "example": "2020-06-30T00:00:00.000Z"
           },
           "matchedName": {
@@ -740,27 +740,27 @@
           },
           "matchedCardinality": {
             "type": "integer",
-            "description": "A cardinality value of the matched name. Binomial names\nhave cardinality 2, uninomials have cardinalty 1 etc.\nCardinality 0 means we cannot determine cardinality of a string.\n",
+            "description": "A cardinality value of the matched name. Binomial names have cardinality 2, uninomials have cardinality 1 etc.\nCardinality 0 means we cannot determine cardinality of a string.\n",
             "example": 2
           },
           "matchedCanonicalSimple": {
             "type": "string",
-            "description": "The most normalized canonical form of a scientific name.\n\nIt does not contain infraspecific ranks, hybrid signs for named hybrids, authors or years.\n\nThis canonical form is the best for matching names.\n",
+            "description": "The most normalized canonical form of a scientific name.\nIt does not contain infraspecific ranks, hybrid signs for named hybrids, authors or years.\nThis canonical form is the best for matching names.\n",
             "example": "Pomatomus saltator"
           },
           "matchedCanonicalFull": {
             "type": "string",
-            "description": "A less normalized canonical form of the matched name  with more details.\n\nThis canonical form is better for presentation and creating matching scores.\n",
+            "description": "A less normalized canonical form of the matched name  with more details.\nThis canonical form is better for presentation and creating matching scores.\n",
             "example": "Pomatomus saltator"
           },
           "currentRecordId": {
             "type": "string",
-            "description": "If the data-source allows taxonomic resolution of a name, `currentRecordId` will contain the data-source record ID of the currently accepted name for the matched taxon. \n",
+            "description": "If the data-source allows taxonomic resolution of a name, `currentRecordId` will contain the data-source record ID of the currently accepted name for the matched taxon.\n",
             "example": "TX543"
           },
           "currentName": {
             "type": "string",
-            "description": "The currently accepted name for the taxon according to the\ndata-source.\n",
+            "description": "The currently accepted name for the taxon according to the data-source.\n",
             "example": "Pomatomus saltatrix (Linnaeus, 1766)"
           },
           "currentCardinality": {
@@ -795,24 +795,24 @@
           },
           "editDistance": {
             "type": "integer",
-            "description": "Edit distance according to Levenshtein algorithm in case of fuzzy matching.\n\nExact matches would have `editDistance` at 0.\n",
+            "description": "Edit distance according to Levenshtein algorithm in case of fuzzy matching.\nExact matches would have `editDistance` at 0.\n",
             "example": 1
           },
           "editDistanceStem": {
             "type": "integer",
-            "description": "Edit distance according to Levenshtein algorithm between stemmed versions of canonical forms of input name and matched name.\n\nStemmed versions are the most normalized forms of scientific names with stripped suffixes and transformation of some characters (v->u, j->i).\n\nThey are not provided by the API, but can be obtained with `gnparser` app.\n",
+            "description": "Edit distance according to Levenshtein algorithm between stemmed versions of canonical forms of input name and matched name.\nStemmed versions are the most normalized forms of scientific names with stripped suffixes and transformation of some characters (v->u, j->i).\nThey are not provided by the API, but can be obtained with `gnparser` app.\n",
             "example": 1
           },
           "matchType": {
             "type": "string",
-            "description": "A category that describes the matching type between the input name-string and the matched name from the data-source.\n\nThe categories are\n\n- `NoMatch`\n- `Exact`\n- `Fuzzy`\n- `PartialExact`\n- `PartialFuzzy`\n- `FacetedSearch`\n",
+            "description": "A category that describes the matching type between the input name-string and the matched name from the data-source.\nThe categories are\n\n- `NoMatch`\n- `Exact`\n- `Fuzzy`\n- `PartialExact`\n- `PartialFuzzy`\n- `FacetedSearch`\n",
             "example": "Fuzzy"
           },
           "scoreDetails": {
             "$ref": "#/components/schemas/ScoreDetails"
           }
         },
-        "description": "A successsful match of input name-string to a record in a data-source.\n\nResultData with the highest score appears as a best match.\n\nResultData from selected data-sources are aggregated into `results` array.\n\nScoring takes the following into account (sorted from the highest impact to the least)\n\n- infraspecific rank (`Aus bus var. cus` vs `Aus bus f. cus`)\n- fuzzy matching edit distance (less is better)\n- authorship matching\n- accepted name vs synonyms (accepted name wins)\n- parsing quality\n"
+        "description": "A successsful match of input name-string to a record in a data-source.\nResultData with the highest score appears as a best match.\nResultData from selected data-sources are aggregated into `results` array.\nScoring takes the following into account (sorted from the highest impact to the least)\n\n- infraspecific rank (`Aus bus var. cus` vs `Aus bus f. cus`)\n- fuzzy matching edit distance (less is better)\n- authorship matching\n- accepted name vs synonyms (accepted name wins)\n- parsing quality\n"
       },
       "ScoreDetails": {
         "description": "Explains which score properties participated in sorting of the data.\n\nProperties located higher provide more weight in the sorting.\n\nAll properties vary from 0 to 1, where 0 has no influence on sorting, and 1 has the highest priority for sorting.\n",
