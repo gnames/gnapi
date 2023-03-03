@@ -370,7 +370,7 @@ components:
           description: >
             Allows to see the context surrounding a name-string.
 
-            The `words_around` parameter sets the number of words located immediately before or after a detected name.
+            The `wordsAround` parameter sets the number of words located immediately before or after a detected name.
 
             These words are then returned in the output.
 

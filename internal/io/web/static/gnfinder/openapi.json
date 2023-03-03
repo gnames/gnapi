@@ -308,7 +308,7 @@
           "wordsAround": {
             "type": "integer",
             "example": 0,
-            "description": "Allows to see the context surrounding a name-string.\nThe `words_around` parameter sets the number of words located immediately before or after a detected name.\nThese words are then returned in the output.\nDefault is 0, maximum value is 5.\n",
+            "description": "Allows to see the context surrounding a name-string.\nThe `wordsAround` parameter sets the number of words located immediately before or after a detected name.\nThese words are then returned in the output.\nDefault is 0, maximum value is 5.\n",
             "enum": [
               0,
               1,
