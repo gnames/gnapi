@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Global Names Matcher API",
-    "description": "This is a `GNmatcher` API for matching name-strings to known scientific names. \n\nThe API takes an Input object containing a list of name-strings and several optional parameters. The name-strings are then matched to millions of names aggregated from hundreds of data-sources.\n\nName-strings are normalized to their `canonical forms` (no authors, annotations etc.) and compared to stored canonical forms. This approach allows to prevent false negatives due to alternative spellings of a name. For example `Bubo bubo L.` and `Bubo bubo (Linn. 1758)` are alternative spellings of the same name.\n\nThe service reports whether a match was found to \"known\" scientific names. There are several categories of matches (e.g. Exact, Fuzzy, Partial etc).\n\nThe API also provides information which [data-sources](https://verifier.globalnames.org/data_sources) contain the matched names. However it does not report the full name-strings from these data-sources. If you need such additional details use [gnames-verifier API](https://apidoc.globalnames.org/gnames) instead.\n\nThe source code of `GNmatcher` is located on [GitHub](https://github.com/gnames/gnmatcher).\n",
+    "description": "This is a `GNmatcher` API for matching name-strings to known scientific names. \n\nThe API takes an Input object containing a list of name-strings and several optional parameters. The name-strings are then matched to millions of names aggregated from hundreds of data-sources.\n\nName-strings are normalized to their `canonical forms` (no authors, annotations etc.) and compared to stored canonical forms. This approach allows preventing false negatives due to alternative spellings of a name. For example `Bubo bubo L.` and `Bubo bubo (Linn. 1758)` are alternative spellings of the same name.\n\nThe service reports whether a match was found to \"known\" scientific names. There are several categories of matches (e.g. Exact, Fuzzy, Partial etc.).\n\nThe API also provides information which [data-sources](https://verifier.globalnames.org/data_sources) contain the matched names. However, it does not report the full name-strings from these data-sources. If you need such additional details use [gnames-verifier API](https://apidoc.globalnames.org/gnames) instead.\n\nThe source code of `GNmatcher` is located on [GitHub](https://github.com/gnames/gnmatcher).\n",
     "contact": {
       "name": "Dmitry Mozzherin",
       "url": "https://github.com/dimus",
@@ -269,7 +269,7 @@
           },
           "matchType": {
             "type": "string",
-            "description": "A type of the match. Can be one of\n- `NoMatch`\n- `Partial Fuzzy`\n- `Partial Exact`\n- `Fuzzy`\n- `Exact`\n- `ExactSpeciesGroup`\n- `Virus`\n\nNote that `Exact` match is for `canonical form` and doesnot take in account authors.\nThe \"root\" `matchType` corresponds to the best found match.\n",
+            "description": "A type of the match. Can be one of\n- `NoMatch`\n- `Partial Fuzzy`\n- `Partial Exact`\n- `Fuzzy`\n- `Exact`\n- `ExactSpeciesGroup`\n- `Virus`\n\nNote that `Exact` match is for `canonical form` and does not take in account authors.\nThe \"root\" `matchType` corresponds to the best found match.\n",
             "example": "Fuzzy"
           },
           "matchItems": {

@@ -10,16 +10,16 @@ info:
 
 
     Name-strings are normalized to their `canonical forms` (no authors, annotations etc.) and compared to stored canonical forms.
-    This approach allows to prevent false negatives due to alternative spellings of a name.
+    This approach allows preventing false negatives due to alternative spellings of a name.
     For example `Bubo bubo L.` and `Bubo bubo (Linn. 1758)` are alternative spellings of the same name.
 
 
     The service reports whether a match was found to "known" scientific names.
-    There are several categories of matches (e.g. Exact, Fuzzy, Partial etc).
+    There are several categories of matches (e.g. Exact, Fuzzy, Partial etc.).
 
 
     The API also provides information which [data-sources](https://verifier.globalnames.org/data_sources) contain the matched names.
-    However it does not report the full name-strings from these data-sources.
+    However, it does not report the full name-strings from these data-sources.
     If you need such additional details use [gnames-verifier API](https://apidoc.globalnames.org/gnames) instead.
 
 
@@ -282,7 +282,7 @@ components:
             - `Virus`
 
 
-            Note that `Exact` match is for `canonical form` and doesnot take in account authors.
+            Note that `Exact` match is for `canonical form` and does not take in account authors.
 
             The "root" `matchType` corresponds to the best found match.
           example: Fuzzy
