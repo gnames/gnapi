@@ -12,7 +12,7 @@
       "name": "MIT",
       "url": "https://opensource.org/licenses/MIT"
     },
-    "version": "1.0.0"
+    "version": "1.1.4"
   },
   "servers": [
     {
@@ -121,6 +121,18 @@
               "type": "boolean",
               "example": false
             }
+          },
+          {
+            "name": "fuzzy_uninomial",
+            "in": "query",
+            "description": "Allows fuzzy matching for uninomial names.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "boolean",
+              "example": false
+            }
           }
         ],
         "responses": {
@@ -183,6 +195,11 @@
             "description": "Expand search to the species group (coordinated names in zoology, autonyms in botany).\nFor example, if a given name-string is `Aus bus`, search also for `Aus bus bus` and vice versa.\n",
             "example": false
           },
+          "withUninomialFuzzyMatch": {
+            "type": "boolean",
+            "description": "Allows fuzzy match for uninomial names.",
+            "example": false
+          },
           "dataSources": {
             "type": "array",
             "description": "Optional list of data-sources Ids to be used for matching.\nIf data-sources Ids are given, the matching is limited to these data-sources.\n\nBy default dataSources array is empty, and matches happen across all data-sources.\n",
@@ -234,6 +251,10 @@
             "type": "boolean",
             "description": "Is true if the match was extended to `species group`.\nIt means that searching for `Aus bus` would also search for `Aus bus bus` and vice versa.\n",
             "example": true
+          },
+          "withUninomialFuzzyMatch": {
+            "type": "boolean",
+            "description": "If true, allows fuzzy match for uninomial names."
           },
           "dataSources": {
             "type": "array",

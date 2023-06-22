@@ -56,7 +56,7 @@ info:
   license:
     name: License MIT
     url: https://opensource.org/licenses/MIT
-  version: 1.0.0
+  version: 1.1.2
 servers:
   - url: https://verifier.globalnames.org/api/v1
     description: Scientific names verification service API
@@ -184,6 +184,14 @@ paths:
           in: query
           description: Expands the search to species group where applicable.
           required: false
+          style: form
+          explode: true
+          schema:
+            type: boolean
+            example: false
+        - name: fuzzy_uninomial
+          in: query
+          description: Allows fuzzy matching for uninomial names.
           style: form
           explode: true
           schema:
@@ -430,6 +438,10 @@ components:
 
             For example, a search for `Aus bus` will also search for `Aus bus bus` and vice versa.
           example: false
+        withUninomialFuzzyMatch:
+          type: boolean
+          description: Allows fuzzy matching for uninomial names.
+          example: false
         withStats:
           type: boolean
           description: >
@@ -489,6 +501,10 @@ components:
         withSpeciesGroup:
           type: boolean
           description: Expand search to species group.
+          example: false
+        withUninomialFuzzyMatch:
+          type: boolean
+          description: Allows fuzzy matching for uninomial names.
           example: false
         dataSources:
           type: array
