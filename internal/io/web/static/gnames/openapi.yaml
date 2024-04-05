@@ -924,6 +924,8 @@ components:
           type: string
           description: >
             A less normalized canonical form of the matched name with more details.
+            
+            It does not have authors and years, but does have hybrid signes and ranks (if given).
 
             This canonical form is better for presentation and creating matching scores.
           example: Pomatomus saltator
@@ -945,12 +947,20 @@ components:
         currentCanonicalSimple:
           type: string
           description: >
-            The most normalized canonical form of the currently accepted scientific name.
+            The most normalized canonical form of a scientific name.
+
+            It does not contain infraspecific ranks, hybrid signs for named hybrids, authors or years. 
+
+            This canonical form is the best for matching names.
           example: Pomatomus saltatrix
         currentCanonicalFull:
           type: string
           description: >
-            A less normalized canonical form of the currently accepted scientific name.
+            A less normalized canonical form of the matched name with more details.
+            
+            It does not have authors and years, but does have hybrid signes and ranks (if given).
+
+            This canonical form is better for presentation and creating matching scores.
           example: Pomatomus saltatrix
         isSynonym:
           type: boolean

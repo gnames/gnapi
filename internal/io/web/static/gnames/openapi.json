@@ -885,7 +885,7 @@
           },
           "matchedCanonicalFull": {
             "type": "string",
-            "description": "A less normalized canonical form of the matched name with more details.\nThis canonical form is better for presentation and creating matching scores.\n",
+            "description": "A less normalized canonical form of the matched name with more details.\nIt does not have authors and years, but does have hybrid signes and ranks (if given).\nThis canonical form is better for presentation and creating matching scores.\n",
             "example": "Pomatomus saltator"
           },
           "currentRecordId": {
@@ -905,12 +905,12 @@
           },
           "currentCanonicalSimple": {
             "type": "string",
-            "description": "The most normalized canonical form of the currently accepted scientific name.\n",
+            "description": "The most normalized canonical form of a scientific name.\nIt does not contain infraspecific ranks, hybrid signs for named hybrids, authors or years. \nThis canonical form is the best for matching names.\n",
             "example": "Pomatomus saltatrix"
           },
           "currentCanonicalFull": {
             "type": "string",
-            "description": "A less normalized canonical form of the currently accepted scientific name.\n",
+            "description": "A less normalized canonical form of the matched name with more details.\nIt does not have authors and years, but does have hybrid signes and ranks (if given).\nThis canonical form is better for presentation and creating matching scores.\n",
             "example": "Pomatomus saltatrix"
           },
           "isSynonym": {
