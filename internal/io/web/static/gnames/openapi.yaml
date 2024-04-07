@@ -791,6 +791,7 @@ components:
         - matchedCardinality
         - currentRecordId
         - currentName
+        - taxonomicStatus
         - isSynonym
         - editDistance
         - stemEditDistance
@@ -962,9 +963,17 @@ components:
 
             This canonical form is better for presentation and creating matching scores.
           example: Pomatomus saltatrix
+        taxonomicStatus:
+          type: string
+          description: >
+            Indicates if matched name is `accepted` or `synonym` according to the data-source.
+            If data-source deos not provide such information, returns `N/A`.
         isSynonym:
           type: boolean
           description: >
+            `DEPRECATED:` use `taxonomicStatus` instead.
+            
+            
             A flag, that is true if the data-source regards matched name as an any kind of synonym to the currently accepted name.
           example: true
         classificationPath:

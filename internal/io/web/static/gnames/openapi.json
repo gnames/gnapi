@@ -815,6 +815,7 @@
           "matchedCardinality",
           "currentRecordId",
           "currentName",
+          "taxonomicStatus",
           "isSynonym",
           "editDistance",
           "stemEditDistance",
@@ -913,9 +914,13 @@
             "description": "A less normalized canonical form of the matched name with more details.\nIt does not have authors and years, but does have hybrid signes and ranks (if given).\nThis canonical form is better for presentation and creating matching scores.\n",
             "example": "Pomatomus saltatrix"
           },
+          "taxonomicStatus": {
+            "type": "string",
+            "description": "Indicates if matched name is `accepted` or `synonym` according to the data-source. If data-source deos not provide such information, returns `N/A`.\n"
+          },
           "isSynonym": {
             "type": "boolean",
-            "description": "A flag, that is true if the data-source regards matched name as an any kind of synonym to the currently accepted name.\n",
+            "description": "`DEPRECATED:` use `taxonomicStatus` instead.\n\nA flag, that is true if the data-source regards matched name as an any kind of synonym to the currently accepted name.\n",
             "example": true
           },
           "classificationPath": {
