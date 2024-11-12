@@ -65,16 +65,21 @@ paths:
         description: Returns more detailed parsed data.
         required: false
         style: form
-        explode: true
         schema:
           type: boolean
           example: false
+      - name: code
+        in: query
+        description: |
+          Allows to slighly modify parsing rules to accomodate ambiguity of parsing betwee different nomenclatural codes.
+          Supported values are `bact`, `bacterial`, `ICNP`, `bot`, `botanical`, `ICN`, `cult`, `cultivar`, `ICNCP`, `zoo`, `zoological`, `ICZN`.
+        schema:
+          type: string
+          example: zoo
       - name: cultivars
         in: query
         description: |
-          Takes in account botanical cultivars for generating
-          canonical forms, normalized version and cardinality of
-          a name.
+          Deprecated, use `code` instead.
         schema:
           type: boolean
           example: false
@@ -218,6 +223,10 @@ components:
           - Bubo bubo
           items:
             type: string
+        code:
+          type: string
+          description: nomenclatural code for parsing (allows slighly modify parsing rules to correspond to a particular code).
+          example: botanical
         withDetails:
           type: boolean
           description: When true, parsed responses contain more details.
@@ -274,6 +283,10 @@ components:
             warning: Year with latin character
           items:
             $ref: '#/components/schemas/QualityWarning'
+        nomenclaturalCode:
+          type: string
+          description: nomenclatural code used modify parsing rules (taken from `code` input).
+          example: ICZN
         verbatim:
           type: string
           description: Input name-string without modifications.

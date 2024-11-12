@@ -45,16 +45,24 @@
             "description": "Returns more detailed parsed data.",
             "required": false,
             "style": "form",
-            "explode": true,
             "schema": {
               "type": "boolean",
               "example": false
             }
           },
           {
+            "name": "code",
+            "in": "query",
+            "description": "Allows to slighly modify parsing rules to accomodate ambiguity of parsing betwee different nomenclatural codes.\nSupported values are `bact`, `bacterial`, `ICNP`, `bot`, `botanical`, `ICN`, `cult`, `cultivar`, `ICNCP`, `zoo`, `zoological`, `ICZN`.\n",
+            "schema": {
+              "type": "string",
+              "example": "zoo"
+            }
+          },
+          {
             "name": "cultivars",
             "in": "query",
-            "description": "Takes in account botanical cultivars for generating\ncanonical forms, normalized version and cardinality of\na name.\n",
+            "description": "Deprecated, use `code` instead.\n",
             "schema": {
               "type": "boolean",
               "example": false
@@ -249,6 +257,11 @@
               "type": "string"
             }
           },
+          "code": {
+            "type": "string",
+            "description": "nomenclatural code for parsing (allows slighly modify parsing rules to correspond to a particular code).",
+            "example": "botanical"
+          },
           "withDetails": {
             "type": "boolean",
             "description": "When true, parsed responses contain more details.",
@@ -306,6 +319,11 @@
             "items": {
               "$ref": "#/components/schemas/QualityWarning"
             }
+          },
+          "nomenclaturalCode": {
+            "type": "string",
+            "description": "nomenclatural code used modify parsing rules (taken from `code` input).",
+            "example": "ICZN"
           },
           "verbatim": {
             "type": "string",
