@@ -122,6 +122,19 @@ paths:
           }
         },
         {
+          name: fuzzy_relaxed,
+          in: query,
+          description:  Relaxes fuzzy matching rules (increases recall and decreases precision).,
+          required: false,
+          style: form,
+          explode: true,
+          schema: {
+            type: boolean,
+            example: false,
+            
+          }
+        },
+        {
           name: fuzzy_uninomial,
           in: query,
           description: Allows fuzzy matching for uninomial names.,
@@ -190,6 +203,15 @@ components:
 
             For example, if a given name-string is `Aus bus`, search also for `Aus bus bus` and vice versa.
           example: false
+        withRelaxedFuzzyMatch:
+          type: boolean
+          description: >
+            Relaxes fuzzy-matching rules, increasing recall and decreasing precision.
+            
+            This option slows matching drematically, and should be used only when needed.
+            Maximum amount of names is decreased from 10,000 to 50.
+            Check results by hand and remove false positives.
+          example: false
         withUninomialFuzzyMatch:
           type: boolean
           description: Allows fuzzy match for uninomial names.
@@ -249,6 +271,9 @@ components:
 
             It means that searching for `Aus bus` would also search for `Aus bus bus` and vice versa.
           example: true
+        withRelaxedFuzzyMatch:
+          type: boolean
+          description: if true, fuzzy-matching rules were relaxed.
         withUninomialFuzzyMatch:
           type: boolean
           description: If true, allows fuzzy match for uninomial names.
