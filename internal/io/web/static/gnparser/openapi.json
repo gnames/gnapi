@@ -53,7 +53,7 @@
           {
             "name": "code",
             "in": "query",
-            "description": "Allows to slighly modify parsing rules to accomodate ambiguity of parsing betwee different nomenclatural codes.\nSupported values are `bact`, `bacterial`, `ICNP`, `bot`, `botanical`, `ICN`, `cult`, `cultivar`, `ICNCP`, `zoo`, `zoological`, `ICZN`.\n",
+            "description": "Allows to slighly modify parsing rules to accomodate ambiguity of parsing between different nomenclatural codes.\nSupported values are `bact`, `bacterial`, `ICNP`, `bot`, `botanical`, `ICN`, `cult`, `cultivar`, `ICNCP`, `zoo`, `zoological`, `ICZN`.\n",
             "schema": {
               "type": "string",
               "example": "zoo"
@@ -110,9 +110,7 @@
                         "verbatim": "H.Peragallo, 1891a",
                         "normalized": "H. Peragallo 1891",
                         "year": "1891",
-                        "authors": [
-                          "H. Peragallo"
-                        ]
+                        "authors": ["H. Peragallo"]
                       },
                       "id": "f6a5b47b-9917-5a48-b0ff-366bc036ae9c",
                       "parserVersion": "v1.3.0"
@@ -199,9 +197,7 @@
                         "verbatim": "H.Peragallo, 1891a",
                         "normalized": "H. Peragallo 1891",
                         "year": "1891",
-                        "authors": [
-                          "H. Peragallo"
-                        ]
+                        "authors": ["H. Peragallo"]
                       },
                       "id": "f6a5b47b-9917-5a48-b0ff-366bc036ae9c",
                       "parserVersion": "v1.3.0"
@@ -241,9 +237,7 @@
   "components": {
     "schemas": {
       "Input": {
-        "required": [
-          "names"
-        ],
+        "required": ["names"],
         "type": "object",
         "properties": {
           "names": {
@@ -299,13 +293,7 @@
             "type": "integer",
             "description": "Quality of parsing.\n\n- 0 - name-string is not parseable\n- 1 - no parsing problems encountered\n- 2 - small parsing problems\n- 3 - serious parsing problems\n- 4 - severe problems, name could not be parsed completely\n\nThe quality is equal to the quality of the most\nsevere warning (see qualityWarnings). If no problems\nare encountered, and the parsing succeeded, the parseQuality\nis set to 1. If parsing failed, the parseQuality is 0.\n",
             "example": 2,
-            "enum": [
-              0,
-              1,
-              2,
-              3,
-              4
-            ]
+            "enum": [0, 1, 2, 3, 4]
           },
           "qualityWarnings": {
             "type": "array",
@@ -342,15 +330,7 @@
             "type": "integer",
             "description": "Allows to sort, partition names according to number of elements\nin their canonical forms. If botanical cultivars are allowed,\ntheir cultivar epithets are taken into account.\n\n0 - cardinality cannot be calculated\n1 - uninomial\n2 - binomial\n3 - trinomial\n4 - quadrinomial\n",
             "example": 3,
-            "enum": [
-              0,
-              1,
-              2,
-              3,
-              4,
-              5,
-              6
-            ]
+            "enum": [0, 1, 2, 3, 4, 5, 6]
           },
           "authorship": {
             "$ref": "#/components/schemas/Authorship"
@@ -358,10 +338,7 @@
           "bacteria": {
             "type": "string",
             "description": "The field is provided if a name has a genus\nthat is registered as bacterial. Possible\nvalues are\n\n- maybe - if the genus has homonyms in other groups\n- yes - if `GNparser` dictionary does not detect any homonyms\n\nThe bacterial names often contain strain information which are\nnot parseable and are placed into the \"tail\" field.\n",
-            "enum": [
-              "maybe",
-              "yes"
-            ]
+            "enum": ["maybe", "yes"]
           },
           "virus": {
             "type": "boolean",
@@ -371,12 +348,7 @@
             "type": "string",
             "description": "Is given if a name is detected as one of the hybrids\n\n- a non-categorized hybrid\n- named hybrid\n- notho- hybrid\n- hybrid formula\n",
             "example": "NAMED_HYBRID",
-            "enum": [
-              "HYBRID",
-              "NAMED_HYBRID",
-              "HYBRID_FORMULA",
-              "NOTHO_HYBRID"
-            ]
+            "enum": ["HYBRID", "NAMED_HYBRID", "HYBRID_FORMULA", "NOTHO_HYBRID"]
           },
           "surrogate": {
             "type": "string",
@@ -456,13 +428,9 @@
             "verbatim": "H.Peragallo, 1891a",
             "normalized": "H. Peragallo 1891",
             "year": "1891",
-            "authors": [
-              "H. Peragallo"
-            ],
+            "authors": ["H. Peragallo"],
             "originalAuth": {
-              "authors": [
-                "H. Peragallo"
-              ],
+              "authors": ["H. Peragallo"],
               "year": {
                 "year": "1891"
               }
@@ -480,13 +448,9 @@
                     "verbatim": "H.Peragallo, 1891a",
                     "normalized": "H. Peragallo 1891",
                     "year": "1891",
-                    "authors": [
-                      "H. Peragallo"
-                    ],
+                    "authors": ["H. Peragallo"],
                     "originalAuth": {
-                      "authors": [
-                        "H. Peragallo"
-                      ],
+                      "authors": ["H. Peragallo"],
                       "year": {
                         "year": "1891"
                       }
@@ -552,10 +516,7 @@
         }
       },
       "QualityWarning": {
-        "required": [
-          "quality",
-          "warning"
-        ],
+        "required": ["quality", "warning"],
         "type": "object",
         "properties": {
           "warning": {
@@ -567,23 +528,13 @@
             "type": "integer",
             "description": "A parse quality associated with the warning.\n\n- 0 - name-string is not parseable\n- 1 - no parsing problems encountered\n- 2 - small parsing problems\n- 3 - serious parsing problems\n- 4 - severe problems, name could not be parsed completely\n",
             "example": 2,
-            "enum": [
-              0,
-              1,
-              2,
-              3,
-              4
-            ]
+            "enum": [0, 1, 2, 3, 4]
           }
         },
         "description": "Explains an encountered parsing problem.\n"
       },
       "Canonical": {
-        "required": [
-          "full",
-          "simple",
-          "stemmed"
-        ],
+        "required": ["full", "simple", "stemmed"],
         "type": "object",
         "properties": {
           "stemmed": {
@@ -605,10 +556,7 @@
         "description": "Simplified versions of a name-string more suitable for\nmatching and comparing name-strings than the verbatim version.\n"
       },
       "Authorship": {
-        "required": [
-          "normalized",
-          "verbatim"
-        ],
+        "required": ["normalized", "verbatim"],
         "type": "object",
         "properties": {
           "verbatim": {
@@ -629,9 +577,7 @@
           "authors": {
             "type": "array",
             "description": "List of all authors detected in the authorship\n",
-            "example": [
-              "H. Peragallo"
-            ],
+            "example": ["H. Peragallo"],
             "items": {
               "type": "string"
             }
@@ -646,16 +592,12 @@
         "description": "Describes provided meta-information about authors of a name.\nSometimes authorship is provided for several elements of a\nname, for example in\n\"Agalinis purpurea (L.) Briton var. borealis (Berg.) Peterson 1987\"\n\nThe authorship provided outside of \"details\" section belongs to\nthe most fine-grained element of a name (\"var. borealis\" for\nthe example above).\n"
       },
       "AuthorGroup": {
-        "required": [
-          "authors"
-        ],
+        "required": ["authors"],
         "type": "object",
         "properties": {
           "authors": {
             "type": "array",
-            "example": [
-              "H. Peragallo"
-            ],
+            "example": ["H. Peragallo"],
             "items": {
               "type": "string"
             }
@@ -673,9 +615,7 @@
         "description": "Provided only if \"with_details=true\"\nGroup of authors belonging to a particular nomenclatural event.\nWe distinguish to possible situations when AuthorGroup is used.\n\n- original - authors of the original description of a name\n- combination - authors of a new combination, rank etc.\n"
       },
       "Year": {
-        "required": [
-          "value"
-        ],
+        "required": ["value"],
         "type": "object",
         "properties": {
           "value": {
@@ -692,17 +632,13 @@
         "description": "Provided only if \"with_details=true\"\nYear of publication. If a range of the\nyears provided, the start year is kept,\nwith isApproximate flag set to true.\n"
       },
       "Authors": {
-        "required": [
-          "authors"
-        ],
+        "required": ["authors"],
         "type": "object",
         "properties": {
           "authors": {
             "type": "array",
             "description": "A list of detected authors.",
-            "example": [
-              "H. Peragallo"
-            ],
+            "example": ["H. Peragallo"],
             "items": {
               "type": "string"
             }
@@ -714,9 +650,7 @@
         "description": "Provided only if \"with_details=true\"\nA \"special\" group of authors, that sometimes appear in\nscientific names after \"ex\" or \"emend.\" qualifiers.\n"
       },
       "DetailsUninomial": {
-        "required": [
-          "uninomial"
-        ],
+        "required": ["uninomial"],
         "type": "object",
         "properties": {
           "uninomial": {
@@ -727,9 +661,7 @@
         "example": "\"uninomial\": {\n  \"uninomial\": \"Tribuloideae\",\n  \"rank\": \"subfam.\",\n  \"parent\": \"Zygophyllaceae\",\n  \"authorship\": {\n    \"verbatim\": \"D.M.Porter\",\n    \"normalized\": \"D. M. Porter\",\n    \"authors\": [\n      \"D. M. Porter\"\n    ],\n    \"originalAuth\": {\n      \"authors\": [\n        \"D. M. Porter\"\n      ]\n    }\n  }\n}\n"
       },
       "DetailsSpecies": {
-        "required": [
-          "species"
-        ],
+        "required": ["species"],
         "type": "object",
         "properties": {
           "species": {
@@ -740,9 +672,7 @@
         "example": "\"species\": {\n  \"genus\": \"Pycnodonte\",\n  \"subgenus\": \"Notostrea\",\n  \"species\": \"tarda\"\n}\n"
       },
       "DetailsInfraspecies": {
-        "required": [
-          "infraspecies"
-        ],
+        "required": ["infraspecies"],
         "type": "object",
         "properties": {
           "infraspecies": {
@@ -753,9 +683,7 @@
         "example": "\"infraspecies\": {\n  \"genus\": \"Pleurosigma\",\n  \"species\": \"vitrea\",\n  \"infraspecies\": [ {\n      \"value\": \"kjellmanii\",\n      \"rank\": \"var.\",\n      \"authorship\": {\n        \"verbatim\": \"H.Peragallo, 1891a\",\n        \"normalized\": \"H. Peragallo 1891\",\n        \"year\": \"1891\",\n        \"authors\": [\n          \"H. Peragallo\"\n        ],\n        \"originalAuth\": {\n          \"authors\": [\n            \"H. Peragallo\"\n          ],\n          \"year\": {\n            \"year\": \"1891\"\n          }\n        }\n      }\n    }\n  ]\n}\n"
       },
       "DetailsComparison": {
-        "required": [
-          "comparison"
-        ],
+        "required": ["comparison"],
         "type": "object",
         "properties": {
           "comparison": {
@@ -766,9 +694,7 @@
         "example": "\"comparison\": {\n  \"genus\": \"Melanella\",\n  \"species\": \"polita\",\n  \"comparisonMarker\": \"cf.\"\n}\n"
       },
       "DetailsApproximation": {
-        "required": [
-          "approximation"
-        ],
+        "required": ["approximation"],
         "type": "object",
         "properties": {
           "approximation": {
@@ -779,9 +705,7 @@
         "example": "\"approximation\": {\n  \"genus\": \"Pleistophora\",\n  \"approximationMarker\": \"sp.\",\n  \"ignored\": \" 2 CHU\"\n}\n"
       },
       "DetailsHybridFormula": {
-        "required": [
-          "hybridFormula"
-        ],
+        "required": ["hybridFormula"],
         "type": "object",
         "properties": {
           "hybridFormula": {
@@ -805,13 +729,7 @@
         "example": "\"hybridFormula\": [\n  {\n    \"species\": {\n      \"genus\": \"Stanhopea\",\n      \"species\": \"tigrina\"\n    }\n  },\n  {\n    \"species\": {\n      \"genus\": \"Stanhopea\",\n      \"species\": \"ecornuta\"\n    }\n  }\n]\n"
       },
       "Word": {
-        "required": [
-          "end",
-          "normalized",
-          "start",
-          "verbatim",
-          "wordType"
-        ],
+        "required": ["end", "normalized", "start", "verbatim", "wordType"],
         "type": "object",
         "properties": {
           "verbatim": {
@@ -861,9 +779,7 @@
         "example": "{\n  \"verbatim\": \"var\",\n  \"normalized\": \"var.\",\n  \"wordType\": \"RANK\",\n  \"start\": 19,\n  \"end\": 22\n}\n"
       },
       "DetailsUninomial_uninomial": {
-        "required": [
-          "value"
-        ],
+        "required": ["value"],
         "type": "object",
         "properties": {
           "value": {
@@ -892,10 +808,7 @@
         }
       },
       "DetailsSpecies_species": {
-        "required": [
-          "genus",
-          "species"
-        ],
+        "required": ["genus", "species"],
         "type": "object",
         "properties": {
           "genus": {
@@ -924,9 +837,7 @@
         }
       },
       "DetailsInfraspecies_infraspecies_infraspecies": {
-        "required": [
-          "value"
-        ],
+        "required": ["value"],
         "type": "object",
         "properties": {
           "value": {
@@ -945,10 +856,7 @@
         }
       },
       "DetailsInfraspecies_infraspecies": {
-        "required": [
-          "genus",
-          "species"
-        ],
+        "required": ["genus", "species"],
         "type": "object",
         "properties": {
           "genus": {
@@ -982,10 +890,7 @@
         }
       },
       "DetailsComparison_comparison": {
-        "required": [
-          "comparisonMarker",
-          "genus"
-        ],
+        "required": ["comparisonMarker", "genus"],
         "type": "object",
         "properties": {
           "genus": {
@@ -1009,10 +914,7 @@
         }
       },
       "DetailsApproximation_approximation": {
-        "required": [
-          "approximationMarker",
-          "genus"
-        ],
+        "required": ["approximationMarker", "genus"],
         "type": "object",
         "properties": {
           "genus": {
