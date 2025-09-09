@@ -149,6 +149,16 @@ paths:
           schema:
             type: string
             example: Pomatomus soltator|Bubo bubo|Isoetes longissimum
+        - name: vernaculars
+          in: query
+          description: Requests to return vernacular names corresponding to a list of languages as three letters according to ISO 639-3 (separated by '|' character). If the first language setting is 'all', all found vernacular names are returned. Note that if this parameter is set, the list of names will be truncated to first 50 entries.
+          required: false
+          style: form
+          explode: false
+          schema:
+            type: string
+            example: eng|rus|deu
+          
         - name: data_sources
           in: query
           description: Array of selected data-sources IDs separated by '|'.
@@ -403,6 +413,15 @@ components:
           items:
             type: string
             description: A name-string to be verified.
+        vernaculars:
+          type: array
+          description: A list of 3-letter language codes (ISO 639-3) to filter the vernacular names returned in the response. If the first item in the array is 'all', all available vernacular names will be returned, regardless of language. If this parameter is used, the number of name strings in input will be truncated to 50.
+          example:
+            - eng
+            - rus
+            - deu
+          items:
+            type: string
         dataSources:
           type: array
           example:
