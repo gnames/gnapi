@@ -796,7 +796,21 @@
             "$ref": "#/components/schemas/MatchType"
           },
           "bestResult": {
-            "$ref": "#/components/schemas/ResultData"
+            "allOf": [
+              {
+                "description": "Returns the first encountered entity with the highest score. When multiple results share this top score (e.g., in cases of hemihomonyms or ambiguous synonyms), use bestResults to retrieve the complete set of equally high-scoring matches.\n"
+              },
+              {
+                "$ref": "#/components/schemas/ResultData"
+              }
+            ]
+          },
+          "bestResults": {
+            "type": "array",
+            "description": "Is empty if there is only one top-scored result. Otherwize provides all results with the highest score.\n",
+            "items": {
+              "$ref": "#/components/schemas/ResultData"
+            }
           },
           "results": {
             "type": "array",

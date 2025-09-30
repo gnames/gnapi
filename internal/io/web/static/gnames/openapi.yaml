@@ -756,7 +756,16 @@ components:
         matchType:
           $ref: '#/components/schemas/MatchType'
         bestResult:
-          $ref: '#/components/schemas/ResultData'
+          allOf:
+            - description: | 
+                Returns the first encountered entity with the highest score. When multiple results share this top score (e.g., in cases of hemihomonyms or ambiguous synonyms), use bestResults to retrieve the complete set of equally high-scoring matches.
+            - $ref: '#/components/schemas/ResultData'
+        bestResults:
+          type: array
+          description: |
+            Is empty if there is only one top-scored result. Otherwize provides all results with the highest score.
+          items:
+            $ref: '#/components/schemas/ResultData'
         results:
           type: array
           description: Matched records found in selected data-sources.
