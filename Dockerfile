@@ -1,8 +1,8 @@
-FROM alpine:3.17
+FROM alpine:3.21
 
-MAINTAINER Dmitry Mozzherin
+LABEL maintainer="Dmitry Mozzherin"
 
-ENV LAST_FULL_REBUILD 2023-02-23
+ENV LAST_FULL_REBUILD=2025-10-01
 
 WORKDIR /bin
 
