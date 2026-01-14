@@ -9,6 +9,9 @@ The easiest way to edit documents is by using a docker image of [swagger-editor]
 
 ```bash
 docker run -d -p 80:8080 swaggerapi/swagger-editor
+# or
+docker run -d -p 80:80 swaggerapi/swagger-editor
+# for newer versions
 ```
 
 ## Usage
